@@ -11,9 +11,13 @@ export default function Home() {
     <main className="min-h-screen">
       <Hero />
 
-      <MissionGrid />
+      {/* 任務 - 白色背景 */}
+      <div className="bg-white">
+        <MissionGrid />
+      </div>
       
-      <section className="bg-white py-20 px-8">
+      {/* 工作坊 - 灰色背景 */}
+      <section className="bg-gray-50 py-20 px-8">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-gray-800 mb-10 text-center relative pb-4">
             🎓 工作坊
@@ -27,9 +31,15 @@ export default function Home() {
         </div>
       </section>
 
-      <AmbassadorStatus />
+      {/* 校園大使存活狀態 - 白色背景 */}
+      <div className="bg-white">
+        <AmbassadorStatus />
+      </div>
 
-      <ContactCard />
+      {/* 聯繫我們 - 灰色背景 */}
+      <div className="bg-gray-50">
+        <ContactCard />
+      </div>
       
       <Footer />
     </main>
