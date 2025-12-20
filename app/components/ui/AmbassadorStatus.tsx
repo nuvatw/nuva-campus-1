@@ -30,19 +30,20 @@ export default function AmbassadorStatus() {
   const survivalRate = totalCount > 0 ? Math.round((aliveCount / totalCount) * 100) : 0;
 
   return (
-    <section id="ambassadors" className="bg-white py-20 px-8">
+    <section id="ambassadors" className="bg-white py-16 sm:py-20 px-4 sm:px-8">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold text-gray-800 mb-2 text-center relative pb-4">
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2 text-center relative pb-4">
           🏆 校園大使存活狀態
           <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-primary rounded" />
         </h2>
 
-        <div className="text-center mb-8 text-gray-600">
-          <p>目前存活：<span className="text-primary font-bold text-xl">{aliveCount}</span> / {totalCount}</p>
+        <div className="text-center mb-8 text-gray-600 text-sm sm:text-base">
+          <p>目前存活：<span className="text-primary font-bold text-lg sm:text-xl">{aliveCount}</span> / {totalCount}</p>
           <p>存活率：<span className="text-primary font-bold">{survivalRate}%</span></p>
         </div>
 
-        <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 gap-3">
+        {/* 網格 - 手機 5 欄，平板 8 欄，桌面 10 欄，使用 flex + justify-center 讓最後一排置中 */}
+        <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
           {ambassadors.map((ambassador) => {
             const isAlive = ambassador.is_alive;
             const isHovered = isAlive && hoveredId === ambassador.id;
@@ -58,7 +59,7 @@ export default function AmbassadorStatus() {
               >
                 <div
                   className={`
-                    p-2 rounded-lg text-center transition-all duration-300 origin-center
+                    w-14 sm:w-16 p-1.5 sm:p-2 rounded-lg text-center transition-all duration-300 origin-center
                     ${isAlive
                       ? 'bg-success-light border-2 border-success cursor-pointer'
                       : 'bg-gray-100 border-2 border-gray-300 opacity-50'
@@ -68,15 +69,15 @@ export default function AmbassadorStatus() {
                     transform: isHovered ? 'scale(1.8)' : 'scale(1)',
                   }}
                 >
-                  <div className={`text-xs font-bold ${isAlive ? 'text-success' : 'text-gray-400'}`}>
+                  <div className={`text-[10px] sm:text-xs font-bold ${isAlive ? 'text-success' : 'text-gray-400'}`}>
                     #{ambassador.ambassador_id}
                   </div>
                   
-                  <div className={`text-sm font-medium truncate ${isAlive ? 'text-success' : 'text-gray-400'}`}>
+                  <div className={`text-xs sm:text-sm font-medium ${isAlive ? 'text-success' : 'text-gray-400'}`}>
                     {isAlive ? ambassador.name : '✕'}
                   </div>
 
-                  {/* Tooltip - 放在卡片內部，跟著放大 */}
+                  {/* Tooltip - 顯示學校 */}
                   {isHovered && ambassador.school && (
                     <div className="absolute -top-8 left-1/2 -translate-x-1/2 z-50">
                       <div className="bg-gray-900 text-white text-[10px] px-2 py-1 rounded shadow-lg whitespace-nowrap">
