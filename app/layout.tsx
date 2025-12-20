@@ -1,16 +1,13 @@
-import type { Metadata } from 'next';
-import { Noto_Sans_TC } from 'next/font/google';
-import './globals.css';
-
-const notoSansTC = Noto_Sans_TC({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '700'],
-  display: 'swap',
-});
+import type { Metadata } from "next";
+import "./globals.css";
 
 export const metadata: Metadata = {
-  title: '第一屆 nuva 校園大使',
-  description: '開啟你的校園影響力之旅',
+  title: "第一屆 nuva 校園大使",
+  description: "開啟你的校園影響力之旅",
+  icons: {
+    icon: "/favicon.png",
+    apple: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
@@ -20,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-TW">
-      <body className={notoSansTC.className}>{children}</body>
+      <body>{children}</body>
     </html>
   );
 }

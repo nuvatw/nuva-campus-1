@@ -10,8 +10,6 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       <Hero />
-      
-      <AmbassadorStatus />
 
       <MissionGrid />
       
@@ -28,6 +26,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <AmbassadorStatus />
 
       <ContactCard />
       
