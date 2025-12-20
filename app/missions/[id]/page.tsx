@@ -161,7 +161,7 @@ export default function MissionDetailPage() {
           <div className="flex items-center gap-4">
             <Link href="/" className="text-gray-600 hover:text-gray-900 transition-colors">← 返回首頁</Link>
             <div className="w-px h-6 bg-gray-300" />
-            <h1 className="text-2xl font-bold text-gray-800">任務 {missionNumber}</h1>
+            <h1 className="text-2xl font-bold text-gray-800">{missionNumber}</h1>
             <span className={`px-3 py-1 text-white text-sm rounded-full ${mission.status === 'ongoing' ? 'bg-primary' : mission.status === 'done' ? 'bg-success' : 'bg-gray-400'}`}>
               {mission.status === 'ongoing' ? '🔥 進行中' : mission.status === 'done' ? '✓ 已完成' : '🔒 未開放'}
             </span>

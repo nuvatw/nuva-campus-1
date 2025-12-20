@@ -43,7 +43,7 @@ export default function MissionItem({ mission }: MissionItemProps) {
   };
 
   const config = statusConfig[mission.status] || statusConfig.locked;
-  const missionNumber = mission.id.replace('m', '');
+  const missionNumber = mission.id.toUpperCase();;
 
   const content = (
     <div className="relative">
