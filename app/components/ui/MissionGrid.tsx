@@ -75,6 +75,7 @@ export default function MissionGrid() {
     return () => clearInterval(interval);
   }, [ongoingMission]);
 
+  // 建立 21 個任務，用 Supabase 資料覆蓋
   const allMissions = Array.from({ length: 21 }, (_, i) => {
     const missionId = `m${String(i + 1).padStart(2, '0')}`;
     const existingMission = missions.find((m) => m.id === missionId);
@@ -97,7 +98,6 @@ export default function MissionGrid() {
           <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-primary rounded" />
         </h2>
 
-        {/* 倒數計時 */}
         {ongoingMission && ongoingMission.due_date && (
           <div className="bg-white rounded-xl p-6 shadow-sm border-2 border-primary/20 text-center mb-8">
             <div className="text-sm text-gray-500 mb-2">⏰ 繳交倒數</div>
@@ -108,7 +108,6 @@ export default function MissionGrid() {
           </div>
         )}
 
-        {/* 進度條 */}
         <div className="mb-8">
           <div className="flex justify-between text-sm text-gray-600 mb-2">
             <span>任務進度</span>
@@ -122,7 +121,6 @@ export default function MissionGrid() {
           </div>
         </div>
 
-        {/* 任務網格 - 手機 5 欄，平板 7 欄 */}
         <div className="grid grid-cols-5 sm:grid-cols-7 gap-2 sm:gap-3 justify-items-center">
           {allMissions.map((mission) => (
             <MissionItem
@@ -133,7 +131,6 @@ export default function MissionGrid() {
           ))}
         </div>
 
-        {/* 圖例 */}
         <div className="flex justify-center gap-4 sm:gap-8 mt-8 text-xs sm:text-sm text-gray-500">
           <div className="flex items-center gap-1 sm:gap-2">
             <div className="w-4 h-4 sm:w-5 sm:h-5 bg-success-light border-2 border-success rounded" />

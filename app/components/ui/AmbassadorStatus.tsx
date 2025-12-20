@@ -6,7 +6,7 @@ import { Ambassador } from '@/app/types/ambassador';
 
 export default function AmbassadorStatus() {
   const [ambassadors, setAmbassadors] = useState<Ambassador[]>([]);
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchAmbassadors() {
@@ -29,6 +29,12 @@ export default function AmbassadorStatus() {
   const totalCount = ambassadors.length;
   const survivalRate = totalCount > 0 ? Math.round((aliveCount / totalCount) * 100) : 0;
 
+  const handleClick = (ambassador: Ambassador) => {
+    if (!ambassador.is_alive) return;
+    // 點擊同一個就關閉，點擊不同的就切換
+    setSelectedId(selectedId === ambassador.id ? null : ambassador.id);
+  };
+
   return (
     <section id="ambassadors" className="bg-white py-16 sm:py-20 px-4 sm:px-8">
       <div className="max-w-6xl mx-auto">
@@ -42,20 +48,16 @@ export default function AmbassadorStatus() {
           <p>存活率：<span className="text-primary font-bold">{survivalRate}%</span></p>
         </div>
 
-        {/* 網格 - 手機 5 欄，平板 8 欄，桌面 10 欄，使用 flex + justify-center 讓最後一排置中 */}
         <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
           {ambassadors.map((ambassador) => {
             const isAlive = ambassador.is_alive;
-            const isHovered = isAlive && hoveredId === ambassador.id;
+            const isSelected = isAlive && selectedId === ambassador.id;
             
             return (
               <div
                 key={ambassador.id}
                 className="relative"
-                style={{ zIndex: isHovered ? 50 : 1 }}
-                onMouseEnter={() => isAlive && setHoveredId(ambassador.id)}
-                onMouseLeave={() => setHoveredId(null)}
-                onClick={() => isAlive && setHoveredId(isHovered ? null : ambassador.id)}
+                style={{ zIndex: isSelected ? 50 : 1 }}
               >
                 <div
                   className={`
@@ -66,8 +68,9 @@ export default function AmbassadorStatus() {
                     }
                   `}
                   style={{
-                    transform: isHovered ? 'scale(1.8)' : 'scale(1)',
+                    transform: isSelected ? 'scale(1.8)' : 'scale(1)',
                   }}
+                  onClick={() => handleClick(ambassador)}
                 >
                   <div className={`text-[10px] sm:text-xs font-bold ${isAlive ? 'text-success' : 'text-gray-400'}`}>
                     #{ambassador.ambassador_id}
@@ -77,8 +80,7 @@ export default function AmbassadorStatus() {
                     {isAlive ? ambassador.name : '✕'}
                   </div>
 
-                  {/* Tooltip - 顯示學校 */}
-                  {isHovered && ambassador.school && (
+                  {isSelected && ambassador.school && (
                     <div className="absolute -top-8 left-1/2 -translate-x-1/2 z-50">
                       <div className="bg-gray-900 text-white text-[10px] px-2 py-1 rounded shadow-lg whitespace-nowrap">
                         {ambassador.school}
