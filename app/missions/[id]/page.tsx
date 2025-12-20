@@ -20,6 +20,7 @@ interface Ambassador {
   ambassador_id: string;
   name: string;
   is_alive: boolean;
+  school?: string;
 }
 
 interface Submission {
@@ -150,7 +151,9 @@ export default function MissionDetailPage() {
   const submissionRate = totalAmbassadors > 0 ? Math.round((submittedCount / totalAmbassadors) * 100) : 0;
 
   const tallyUrl = '#tally-open=5BB8Yo&tally-emoji-text=👋&tally-emoji-animation=wave';
-  const missionNumber = mission.id.replace('m', '');
+  
+  // 顯示大寫的 M05
+  const missionDisplay = mission.id.toUpperCase();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -161,7 +164,7 @@ export default function MissionDetailPage() {
           <div className="flex items-center gap-4">
             <Link href="/" className="text-gray-600 hover:text-gray-900 transition-colors">← 返回首頁</Link>
             <div className="w-px h-6 bg-gray-300" />
-            <h1 className="text-2xl font-bold text-gray-800">{missionNumber}</h1>
+            <h1 className="text-2xl font-bold text-gray-800">{missionDisplay}</h1>
             <span className={`px-3 py-1 text-white text-sm rounded-full ${mission.status === 'ongoing' ? 'bg-primary' : mission.status === 'done' ? 'bg-success' : 'bg-gray-400'}`}>
               {mission.status === 'ongoing' ? '🔥 進行中' : mission.status === 'done' ? '✓ 已完成' : '🔒 未開放'}
             </span>
