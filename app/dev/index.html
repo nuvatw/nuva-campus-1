@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>nuva 方案選擇</title>
+  <style>
+    /* ===== Design Tokens ===== */
+    :root {
+      --color-primary: #4378b9;
+      --color-primary-dark: #35608f;
+      --color-primary-light: #6a9bd1;
+      --color-white: #ffffff;
+      --color-black: #111111;
+      --color-gray-900: #1f2937;
+      --color-gray-700: #374151;
+      --color-gray-600: #4b5563;
+      --color-gray-500: #6b7280;
+      --color-gray-400: #9ca3af;
+      --color-gray-300: #d1d5db;
+      --color-gray-200: #e5e7eb;
+      --color-gray-100: #f3f4f6;
+      --color-gray-50: #f9fafb;
+      --color-overlay: rgba(17, 24, 39, 0.6);
+      
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+      
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+      
+      --spacing-xs: 4px;
+      --spacing-sm: 8px;
+      --spacing-md: 16px;
+      --spacing-lg: 24px;
+      --spacing-xl: 32px;
+      
+      --transition-fast: 150ms ease;
+      --transition-base: 200ms ease;
+    }
+
+    /* ===== Reset ===== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--color-gray-900);
+      background: var(--color-gray-50);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      background: none;
+    }
+
+    ul { list-style: none; }
+
+    /* ===== Background Website Simulation ===== */
+    .bg-site {
+      position: fixed;
+      inset: 0;
+      overflow: auto;
+      transition: filter var(--transition-base);
+    }
+
+    .bg-site.blurred {
+      filter: blur(6px);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .sim-navbar {
+      background: var(--color-white);
+      padding: var(--spacing-md) var(--spacing-xl);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--color-gray-200);
+    }
+
+    .sim-logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+
+    .sim-nav-links {
+      display: flex;
+      gap: var(--spacing-lg);
+    }
+
+    .sim-nav-links span {
+      color: var(--color-gray-600);
+      font-size: 0.875rem;
+    }
+
+    .sim-hero {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      padding: 80px var(--spacing-xl);
+      text-align: center;
+      color: var(--color-white);
+    }
+
+    .sim-hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .sim-hero p {
+      font-size: 1.125rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .sim-content {
+      padding: var(--spacing-xl);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .sim-section-title {
+      font-size: 1.25rem;
+      color: var(--color-gray-700);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .sim-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--spacing-lg);
+    }
+
+    @media (max-width: 768px) {
+      .sim-cards {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .sim-card {
+      background: var(--color-white);
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-lg);
+    }
+
+    .sim-card-title {
+      font-size: 1rem;
+      color: var(--color-gray-700);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .sim-card-text {
+      font-size: 0.875rem;
+      color: var(--color-gray-500);
+      line-height: 1.5;
+    }
+
+    .sim-paragraphs {
+      margin-top: var(--spacing-xl);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
+
+    .sim-paragraph {
+      height: 16px;
+      background: var(--color-gray-200);
+      border-radius: var(--radius-sm);
+    }
+
+    .sim-paragraph:nth-child(1) { width: 100%; }
+    .sim-paragraph:nth-child(2) { width: 85%; }
+    .sim-paragraph:nth-child(3) { width: 92%; }
+    .sim-paragraph:nth-child(4) { width: 70%; }
+
+    /* ===== Overlay ===== */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--color-overlay);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--spacing-md);
+      z-index: 1000;
+      opacity: 1;
+      visibility: visible;
+      transition: opacity var(--transition-base), visibility var(--transition-base);
+    }
+
+    .overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    /* ===== Modal ===== */
+    .modal {
+      background: var(--color-white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-xl);
+      width: 100%;
+      max-width: 980px;
+      max-height: 90vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transform: scale(1) translateY(0);
+      transition: transform var(--transition-base);
+    }
+
+    .overlay.hidden .modal {
+      transform: scale(0.95) translateY(20px);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--spacing-lg) var(--spacing-xl);
+      border-bottom: 1px solid var(--color-gray-200);
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--color-gray-900);
+    }
+
+    .close-btn {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-full);
+      color: var(--color-gray-500);
+      transition: all var(--transition-fast);
+    }
+
+    .close-btn:hover {
+      background: var(--color-gray-100);
+      color: var(--color-gray-700);
+    }
+
+    .close-btn:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+
+    .close-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* ===== Tabs ===== */
+    .tabs-container {
+      display: flex;
+      justify-content: center;
+      padding: var(--spacing-lg) var(--spacing-xl) 0;
+    }
+
+    .tabs {
+      display: inline-flex;
+      background: var(--color-gray-100);
+      border-radius: var(--radius-full);
+      padding: 3px;
+      position: relative;
+    }
+
+    .tab-btn {
+      position: relative;
+      padding: var(--spacing-sm) var(--spacing-xl);
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--color-gray-500);
+      border-radius: var(--radius-full);
+      transition: all var(--transition-base);
+      z-index: 1;
+    }
+
+    .tab-btn:hover {
+      color: var(--color-gray-700);
+    }
+
+    .tab-btn.active {
+      color: var(--color-white);
+    }
+
+    .tab-btn:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+
+    .tab-indicator {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      height: calc(100% - 6px);
+      width: calc(50% - 3px);
+      background: var(--color-primary);
+      border-radius: var(--radius-full);
+      transition: transform var(--transition-base);
+    }
+
+    .tabs[data-active="yearly"] .tab-indicator {
+      transform: translateX(100%);
+    }
+
+    /* ===== Modal Body ===== */
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--spacing-xl);
+    }
+
+    .modal-body::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .modal-body::-webkit-scrollbar-track {
+      background: var(--color-gray-100);
+    }
+
+    .modal-body::-webkit-scrollbar-thumb {
+      background: var(--color-gray-300);
+      border-radius: var(--radius-full);
+    }
+
+    /* ===== Plans Grid ===== */
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--spacing-lg);
+    }
+
+    @media (max-width: 800px) {
+      .plans-grid {
+        grid-template-columns: 1fr;
+        max-width: 380px;
+        margin: 0 auto;
+      }
+    }
+
+    /* ===== Plan Card ===== */
+    .plan-card {
+      position: relative;
+      background: var(--color-white);
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-xl);
+      display: flex;
+      flex-direction: column;
+      transition: all var(--transition-base);
+    }
+
+    .plan-card:hover {
+      border-color: var(--color-gray-300);
+      box-shadow: var(--shadow-md);
+    }
+
+    .plan-card.featured {
+      border: 2px solid var(--color-primary);
+      box-shadow: var(--shadow-lg);
+    }
+
+    @media (min-width: 801px) {
+      .plan-card.featured {
+        transform: scale(1.03);
+      }
+    }
+
+    .plan-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: var(--spacing-xs) var(--spacing-md);
+      background: var(--color-primary);
+      color: var(--color-white);
+      font-size: 0.75rem;
+      font-weight: 700;
+      border-radius: var(--radius-full);
+      white-space: nowrap;
+    }
+
+    .plan-name {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--color-gray-900);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .plan-price {
+      display: flex;
+      align-items: baseline;
+      gap: var(--spacing-xs);
+      margin-bottom: 2px;
+    }
+
+    .price-amount {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--color-gray-900);
+      line-height: 1;
+    }
+
+    .price-currency {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-gray-500);
+    }
+
+    .price-period {
+      font-size: 0.875rem;
+      color: var(--color-gray-500);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .plan-description {
+      font-size: 0.875rem;
+      color: var(--color-gray-600);
+      line-height: 1.5;
+      margin-bottom: var(--spacing-lg);
+      padding-bottom: var(--spacing-lg);
+      border-bottom: 1px solid var(--color-gray-200);
+    }
+
+    /* ===== Features List ===== */
+    .features-intro {
+      font-size: 0.8rem;
+      color: var(--color-gray-500);
+      margin-bottom: var(--spacing-sm);
+      font-style: italic;
+    }
+
+    .features-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-sm);
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--spacing-sm);
+      font-size: 0.875rem;
+      color: var(--color-gray-700);
+    }
+
+    .feature-icon {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      margin-top: 3px;
+      color: var(--color-primary);
+    }
+
+    .feature-text {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    /* ===== Bonus Note (8折) ===== */
+    .bonus-note {
+      margin-top: var(--spacing-md);
+      padding: var(--spacing-sm) var(--spacing-md);
+      background: var(--color-gray-50);
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      color: var(--color-gray-600);
+      border-left: 3px solid var(--color-primary);
+    }
+
+    /* ===== Tooltip ===== */
+    .tooltip-trigger {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 15px;
+      height: 15px;
+      margin-left: 2px;
+      background: var(--color-white);
+      border: 1px solid var(--color-gray-400);
+      border-radius: var(--radius-full);
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--color-gray-500);
+      cursor: help;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+
+    .tooltip-trigger:hover,
+    .tooltip-trigger:focus {
+      background: var(--color-gray-100);
+      border-color: var(--color-gray-500);
+      color: var(--color-gray-700);
+    }
+
+    .tooltip-content {
+      position: absolute;
+      bottom: calc(100% + 10px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 240px;
+      padding: var(--spacing-sm) var(--spacing-md);
+      background: var(--color-gray-900);
+      color: var(--color-white);
+      font-size: 0.75rem;
+      font-weight: 400;
+      line-height: 1.5;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      visibility: hidden;
+      transition: all var(--transition-fast);
+      z-index: 100;
+      text-align: left;
+    }
+
+    .tooltip-content::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: var(--color-gray-900);
+    }
+
+    .tooltip-trigger:hover .tooltip-content,
+    .tooltip-trigger:focus .tooltip-content,
+    .tooltip-trigger.active .tooltip-content {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Tooltip list styling */
+    .tooltip-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .tooltip-list li {
+      position: relative;
+      padding-left: 12px;
+      margin-bottom: 4px;
+    }
+
+    .tooltip-list li:last-child {
+      margin-bottom: 0;
+    }
+
+    .tooltip-list li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: var(--color-gray-400);
+    }
+
+    /* Tooltip position adjustments */
+    .tooltip-trigger.tooltip-left .tooltip-content {
+      left: 0;
+      transform: translateX(-10%);
+    }
+    .tooltip-trigger.tooltip-left .tooltip-content::after {
+      left: 20px;
+      transform: none;
+    }
+
+    .tooltip-trigger.tooltip-right .tooltip-content {
+      left: auto;
+      right: 0;
+      transform: translateX(10%);
+    }
+    .tooltip-trigger.tooltip-right .tooltip-content::after {
+      left: auto;
+      right: 20px;
+      transform: none;
+    }
+
+    /* ===== CTA Button ===== */
+    .plan-cta {
+      margin-top: auto;
+      padding-top: var(--spacing-lg);
+    }
+
+    .cta-btn {
+      display: block;
+      width: 100%;
+      padding: var(--spacing-md);
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-align: center;
+      border-radius: var(--radius-md);
+      transition: all var(--transition-base);
+    }
+
+    .cta-btn-primary {
+      background: var(--color-primary);
+      color: var(--color-white);
+    }
+
+    .cta-btn-primary:hover {
+      background: var(--color-primary-dark);
+    }
+
+    .cta-btn-secondary {
+      background: var(--color-white);
+      color: var(--color-gray-700);
+      border: 1px solid var(--color-gray-300);
+    }
+
+    .cta-btn-secondary:hover {
+      background: var(--color-gray-50);
+      border-color: var(--color-gray-400);
+    }
+
+    .cta-btn:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+
+    /* ===== Reopen Button ===== */
+    .reopen-btn {
+      position: fixed;
+      bottom: var(--spacing-xl);
+      left: 50%;
+      transform: translateX(-50%);
+      padding: var(--spacing-md) var(--spacing-xl);
+      background: var(--color-primary);
+      color: var(--color-white);
+      font-weight: 600;
+      border-radius: var(--radius-full);
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      visibility: hidden;
+      transition: all var(--transition-base);
+      z-index: 999;
+    }
+
+    .reopen-btn.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .reopen-btn:hover {
+      background: var(--color-primary-dark);
+      transform: translateX(-50%) translateY(-2px);
+      box-shadow: var(--shadow-xl);
+    }
+  </style>
+</head>
+<body>
+  <!-- Simulated Background Website -->
+  <div class="bg-site blurred" id="bg-site" aria-hidden="true">
+    <nav class="sim-navbar">
+      <div class="sim-logo">nuva</div>
+      <div class="sim-nav-links">
+        <span>課程</span>
+        <span>方案</span>
+        <span>社群</span>
+        <span>關於我們</span>
+      </div>
+    </nav>
+    <section class="sim-hero">
+      <h1>用 AI 提升你的工作效率</h1>
+      <p>加入 nuva，學習最新 AI 工具與技術，與上萬名學員一起成長。</p>
+    </section>
+    <div class="sim-content">
+      <h2 class="sim-section-title">熱門課程</h2>
+      <div class="sim-cards">
+        <div class="sim-card">
+          <h3 class="sim-card-title">ChatGPT 完全指南</h3>
+          <p class="sim-card-text">從零開始掌握 ChatGPT，學習 prompt 技巧與實務應用。</p>
+        </div>
+        <div class="sim-card">
+          <h3 class="sim-card-title">AI 繪圖入門</h3>
+          <p class="sim-card-text">使用 Midjourney 與 DALL-E 創作專業級圖像。</p>
+        </div>
+        <div class="sim-card">
+          <h3 class="sim-card-title">自動化工作流程</h3>
+          <p class="sim-card-text">結合 AI 與自動化工具，打造高效工作流程。</p>
+        </div>
+      </div>
+      <div class="sim-paragraphs">
+        <div class="sim-paragraph"></div>
+        <div class="sim-paragraph"></div>
+        <div class="sim-paragraph"></div>
+        <div class="sim-paragraph"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay & Modal -->
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal" role="document">
+      <!-- Header -->
+      <header class="modal-header">
+        <h2 class="modal-title" id="modal-title">選擇您的方案</h2>
+        <button class="close-btn" id="close-btn" aria-label="關閉視窗">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </header>
+
+      <!-- Tabs -->
+      <div class="tabs-container">
+        <div class="tabs" data-active="monthly" role="tablist">
+          <div class="tab-indicator" aria-hidden="true"></div>
+          <button class="tab-btn active" id="tab-monthly" role="tab" aria-selected="true">月付</button>
+          <button class="tab-btn" id="tab-yearly" role="tab" aria-selected="false">年付</button>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <main class="modal-body">
+        <div class="plans-grid">
+          <!-- Plan 1: Basic -->
+          <article class="plan-card">
+            <h3 class="plan-name">Basic</h3>
+            <div class="plan-price">
+              <span class="price-amount" data-monthly="290" data-yearly="2,900">290</span>
+              <span class="price-currency">元</span>
+            </div>
+            <p class="price-period" data-monthly="每月" data-yearly="每年">每月</p>
+            <p class="plan-description">適合初學者，<br>快速建立 AI 基礎</p>
+            
+            <ul class="features-list">
+              <li class="feature-item">
+                <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span class="feature-text">全平台 AI 線上課程（每兩週更新）</span>
+              </li>
+              <li class="feature-item">
+                <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span class="feature-text">課程簡報下載</span>
+              </li>
+              <li class="feature-item">
+                <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span class="feature-text">教案與教學模板</span>
+              </li>
+              <li class="feature-item">
+                <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span class="feature-text">延伸學習資源</span>
+              </li>
+            </ul>
+
+            <div class="plan-cta">
+              <button class="cta-btn cta-btn-secondary">開始學習</button>
+            </div>
+          </article>
+
+          <!-- Plan 2: Club (Featured) -->
+          <article class="plan-card featured">
+            <span class="plan-badge">最受歡迎</span>
+            <h3 class="plan-name">Club</h3>
+            <div class="plan-price">
+              <span class="price-amount" data-monthly="990" data-yearly="9,900">990</span>
+              <span class="price-currency">元</span>
+            </div>
+            <p class="price-period" data-monthly="每月" data-yearly="每年">每月</p>
+            <p class="plan-description">完整學習體驗，<br>社群支援 + 活動 + 證書</p>
+            
+            <p class="features-intro">包含 Basic 全部內容，並加上：</p>
+            <ul class="features-list">
+              <li class="feature-item">
+                <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span class="feature-text">
+                  線上 & 實體 Club 社群
+                  <button class="tooltip-trigger" aria-label="更多資訊" tabindex="0">
+                    i
+                    <span class="tooltip-content">
+                      <ul class="tooltip-list">
+                        <li>線上：Discord 學員互助與交流</li>
+                        <li>線上：每週一次「nuva Insider」Live Q&A</li>
+                        <li>實體：每月台北小聚（同步線上參與）</li>
+                      </ul>
+                    </span>
+                  </button>
+                </span>
+              </li>
+              <li class="feature-item">
+                <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span class="feature-text">24 小時優先回覆：課程／AI 技術問題</span>
+              </li>
+              <li class="feature-item">
+                <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span class="feature-text">
+                  每月 AI 學習報告書
+                  <button class="tooltip-trigger" aria-label="更多資訊" tabindex="0">
+                    i
+                    <span class="tooltip-content">
+                      <ul class="tooltip-list">
+                        <li>根據已學內容推薦下一步課程</li>
+                        <li>整理已學技能與技巧（Wrap up）</li>
+                        <li>建議適合挑戰的證照等級</li>
+                      </ul>
+                    </span>
+                  </button>
+                </span>
+              </li>
+              <li class="feature-item">
+                <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span class="feature-text">
+                  官方數位認證證書
+                  <button class="tooltip-trigger tooltip-left" aria-label="更多資訊" tabindex="0">
+                    i
+                    <span class="tooltip-content">
+                      <ul class="tooltip-list">
+                        <li>完成指定條件可獲得官方數位證書</li>
+                        <li>Lv 3 / 6 / 9 / 12 可申請實體獎牌</li>
+                      </ul>
+                    </span>
+                  </button>
+                </span>
+              </li>
+            </ul>
+
+            <div class="bonus-note">
+              會員加碼：官方活動全平台 8 折（線上與實體皆適用）
+            </div>
+
+            <div class="plan-cta">
+              <button class="cta-btn cta-btn-primary">加入 Club！</button>
+            </div>
+          </article>
+
+          <!-- Plan 3: Pro -->
+          <article class="plan-card">
+            <h3 class="plan-name">Pro</h3>
+            <div class="plan-price">
+              <span class="price-amount" data-monthly="18,990" data-yearly="189,900">18,990</span>
+              <span class="price-currency">元</span>
+            </div>
+            <p class="price-period" data-monthly="每月" data-yearly="每年">每月</p>
+            <p class="plan-description">最高強度：<br>實體課程全包 + 創辦人 1:1</p>
+            
+            <p class="features-intro">包含 Club 全部內容，並加上：</p>
+            <ul class="features-list">
+              <li class="feature-item">
+                <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span class="feature-text">
+                  免費參加所有實體課程
+                  <button class="tooltip-trigger" aria-label="更多資訊" tabindex="0">
+                    i
+                    <span class="tooltip-content">
+                      <ul class="tooltip-list">
+                        <li>平均 nuva 一季舉辦 1–2 場實體課程</li>
+                        <li>地點多在台北</li>
+                      </ul>
+                    </span>
+                  </button>
+                </span>
+              </li>
+              <li class="feature-item">
+                <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span class="feature-text">與創辦人 林上哲 1:1 線上教練 45 分鐘</span>
+              </li>
+            </ul>
+
+            <div class="plan-cta">
+              <button class="cta-btn cta-btn-secondary">開始陪跑！</button>
+            </div>
+          </article>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Reopen Button -->
+  <button class="reopen-btn" id="reopen-btn">重新開啟方案選擇</button>
+
+  <script>
+    (function() {
+      'use strict';
+
+      const overlay = document.getElementById('overlay');
+      const bgSite = document.getElementById('bg-site');
+      const closeBtn = document.getElementById('close-btn');
+      const reopenBtn = document.getElementById('reopen-btn');
+      const tabsContainer = document.querySelector('.tabs');
+      const tabButtons = document.querySelectorAll('.tab-btn');
+      const priceAmounts = document.querySelectorAll('.price-amount');
+      const pricePeriods = document.querySelectorAll('.price-period');
+      const tooltipTriggers = document.querySelectorAll('.tooltip-trigger');
+
+      let isYearly = false;
+
+      // Modal functions
+      function closeModal() {
+        overlay.classList.add('hidden');
+        bgSite.classList.remove('blurred');
+        reopenBtn.classList.add('visible');
+        document.body.style.overflow = '';
+      }
+
+      function openModal() {
+        overlay.classList.remove('hidden');
+        bgSite.classList.add('blurred');
+        reopenBtn.classList.remove('visible');
+        document.body.style.overflow = 'hidden';
+        closeBtn.focus();
+      }
+
+      closeBtn.addEventListener('click', closeModal);
+      reopenBtn.addEventListener('click', openModal);
+
+      overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) {
+          closeModal();
+        }
+      });
+
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !overlay.classList.contains('hidden')) {
+          closeModal();
+        }
+      });
+
+      // Tab switching
+      function updatePrices() {
+        const key = isYearly ? 'yearly' : 'monthly';
+        
+        priceAmounts.forEach(function(el) {
+          el.textContent = el.dataset[key];
+        });
+        
+        pricePeriods.forEach(function(el) {
+          el.textContent = el.dataset[key];
+        });
+      }
+
+      tabButtons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          const targetMonthly = btn.id === 'tab-monthly';
+          isYearly = !targetMonthly;
+
+          tabsContainer.setAttribute('data-active', isYearly ? 'yearly' : 'monthly');
+
+          tabButtons.forEach(function(b) {
+            const isActive = b === btn;
+            b.classList.toggle('active', isActive);
+            b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+          });
+
+          updatePrices();
+        });
+
+        btn.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            btn.click();
+          }
+        });
+      });
+
+      // Tooltip (click for mobile)
+      tooltipTriggers.forEach(function(trigger) {
+        trigger.addEventListener('click', function(e) {
+          e.stopPropagation();
+          
+          tooltipTriggers.forEach(function(t) {
+            if (t !== trigger) {
+              t.classList.remove('active');
+            }
+          });
+
+          trigger.classList.toggle('active');
+        });
+
+        trigger.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            trigger.click();
+          }
+        });
+      });
+
+      document.addEventListener('click', function() {
+        tooltipTriggers.forEach(function(t) {
+          t.classList.remove('active');
+        });
+      });
+
+      // Initial state
+      document.body.style.overflow = 'hidden';
+
+    })();
+  </script>
+</body>
+</html>
