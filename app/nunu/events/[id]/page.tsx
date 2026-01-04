@@ -326,7 +326,7 @@ export default function NunuEventDetailPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, chinese_name: e.target.value })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-gray-900"
                     placeholder="王小明"
                     required
                   />
@@ -342,7 +342,7 @@ export default function NunuEventDetailPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, english_name: e.target.value })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-gray-900"
                     placeholder="Xiao Ming Wang"
                     required
                   />
@@ -380,7 +380,7 @@ export default function NunuEventDetailPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, dietary_restrictions: e.target.value })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-gray-900"
                     placeholder="如：海鮮、牛肉、花生過敏"
                   />
                 </div>
@@ -395,7 +395,7 @@ export default function NunuEventDetailPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, picky_eating: e.target.value })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-gray-900"
                     placeholder="如：香菜、茄子、青椒"
                   />
                 </div>
