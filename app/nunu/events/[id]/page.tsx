@@ -302,20 +302,33 @@ export default function NunuEventDetailPage() {
 
           {/* Event Date - Secondary info */}
           <div className={`${event.preMeeting ? 'col-span-6 lg:col-span-4' : 'col-span-6 lg:col-span-4'} bg-white rounded-2xl p-5 border border-slate-200 hover:border-amber-300 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300 group`}>
-            <div className="flex items-start justify-between mb-2">
-              <p className="text-[10px] text-amber-500 tracking-widest uppercase font-medium">Event Date</p>
+            <div className="flex items-start justify-between mb-3">
+              <p className="text-[10px] text-amber-500 tracking-widest uppercase font-medium">Event Info</p>
               <div className="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center group-hover:bg-amber-100 transition-colors">
                 <span>📅</span>
               </div>
             </div>
-            <div className="text-2xl font-bold text-slate-800 mb-1">
-              {new Date(event.date).toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric' })}
-            </div>
-            <p className="text-sm text-slate-400">
-              {event.startTime} · {event.location}
-            </p>
-            <div className="mt-3 inline-block px-2 py-1 bg-amber-50 text-amber-600 text-xs rounded">
-              集合 {event.meetingTime}
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-slate-400">活動日期</span>
+                <span className="text-slate-700 font-medium">
+                  {new Date(event.date).toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' })}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">活動時間</span>
+                <span className="text-slate-700">{event.startTime} ~ {event.endTime}</span>
+              </div>
+              {event.picnicTime && (
+                <div className="flex justify-between">
+                  <span className="text-slate-400">戶外野餐</span>
+                  <span className="text-slate-700">{event.picnicTime}</span>
+                </div>
+              )}
+              <div className="flex justify-between pt-1 border-t border-slate-100">
+                <span className="text-amber-500 font-medium">集合時間</span>
+                <span className="text-amber-600 font-medium">{event.meetingTime} AM</span>
+              </div>
             </div>
           </div>
 

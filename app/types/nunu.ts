@@ -4,6 +4,7 @@ export interface NunuEvent {
   date: string;
   startTime: string;
   endTime: string;
+  picnicTime?: string;
   location: string;
   meetingTime: string;
   description?: string;
