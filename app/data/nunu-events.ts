@@ -10,5 +10,12 @@ export const nunuEvents: NunuEvent[] = [
     location: '世貿一館',
     meetingTime: '07:50',
     gameStartTime: '2026-01-10T08:00:00+08:00',
+    // 行前會議
+    preMeeting: {
+      date: '2026-01-07',
+      startTime: '21:00',
+      endTime: '21:30',
+      link: 'https://meet.google.com/gxs-saof-txq',
+    },
   },
 ];

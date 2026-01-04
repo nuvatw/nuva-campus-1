@@ -8,6 +8,12 @@ export interface NunuEvent {
   meetingTime: string;
   description?: string;
   gameStartTime?: string;
+  preMeeting?: {
+    date: string;
+    startTime: string;
+    endTime: string;
+    link: string;
+  };
 }
 
 export interface NunuEventRegistration {
