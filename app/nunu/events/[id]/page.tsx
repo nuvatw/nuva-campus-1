@@ -212,12 +212,20 @@ export default function NunuEventDetailPage() {
               <h1 className="text-base font-semibold text-slate-800">{event.title}</h1>
             </div>
           </div>
-          <button
-            onClick={() => setShowForm(true)}
-            className="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium rounded-lg transition-all hover:shadow-lg hover:shadow-sky-500/25 hover:-translate-y-0.5"
-          >
-            努努參戰
-          </button>
+          <div className="flex items-center gap-2">
+            <Link
+              href={`/nunu/events/${id}/run`}
+              className="px-4 py-2 bg-rose-50 hover:bg-rose-500 text-rose-600 hover:text-white text-sm font-medium rounded-lg border border-rose-200 hover:border-rose-500 transition-all hover:shadow-lg hover:shadow-rose-500/25 hover:-translate-y-0.5"
+            >
+              執行
+            </Link>
+            <button
+              onClick={() => setShowForm(true)}
+              className="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium rounded-lg transition-all hover:shadow-lg hover:shadow-sky-500/25 hover:-translate-y-0.5"
+            >
+              努努參戰
+            </button>
+          </div>
         </div>
       </header>
 

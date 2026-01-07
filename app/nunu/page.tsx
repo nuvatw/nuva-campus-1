@@ -1,9 +1,12 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { nunuEvents } from '@/app/data/nunu-events';
 
 export default function NunuPage() {
+  const router = useRouter();
+
   return (
     <div className="min-h-screen bg-stone-50">
       {/* Header */}
@@ -20,10 +23,10 @@ export default function NunuPage() {
             const eventDate = new Date(event.date);
 
             return (
-              <Link
+              <div
                 key={event.id}
-                href={`/nunu/events/${event.id}`}
-                className="block bg-white rounded-lg border border-stone-200 hover:border-sky-300 hover:shadow-sm transition-all"
+                onClick={() => router.push(`/nunu/events/${event.id}`)}
+                className="block bg-white rounded-lg border border-stone-200 hover:border-sky-300 hover:shadow-sm transition-all cursor-pointer"
               >
                 <div className="p-5 sm:p-6">
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
@@ -63,13 +66,22 @@ export default function NunuPage() {
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center text-sky-500 text-sm">
-                      <span>詳情</span>
-                      <span className="ml-1">→</span>
+                    <div className="flex items-center gap-3">
+                      <Link
+                        href={`/nunu/events/${event.id}/run`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="px-3 py-1.5 bg-rose-50 hover:bg-rose-500 text-rose-600 hover:text-white text-xs font-medium rounded-lg border border-rose-200 hover:border-rose-500 transition-all"
+                      >
+                        執行
+                      </Link>
+                      <div className="flex items-center text-sky-500 text-sm">
+                        <span>詳情</span>
+                        <span className="ml-1">→</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </Link>
+              </div>
             );
           })}
         </div>
