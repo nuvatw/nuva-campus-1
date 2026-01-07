@@ -8,17 +8,17 @@ export default function NunuPage() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <header className="bg-white border-b border-stone-200 sticky top-0 z-40">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-          <p className="text-xs tracking-widest text-stone-400 mb-2">NUNU EVENTS</p>
-          <h1 className="text-2xl sm:text-3xl font-light text-stone-800 tracking-tight">活動一覽</h1>
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
+        <div className="max-w-lg mx-auto px-4 py-4">
+          <p className="text-[10px] tracking-widest text-slate-400 uppercase">Nunu Events</p>
+          <h1 className="text-lg font-semibold text-slate-800">活動一覽</h1>
         </div>
       </header>
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
-        <div className="space-y-4">
+      <div className="max-w-lg mx-auto px-4 py-6">
+        <div className="space-y-3">
           {nunuEvents.map((event) => {
             const eventDate = new Date(event.date);
 
@@ -26,47 +26,44 @@ export default function NunuPage() {
               <div
                 key={event.id}
                 onClick={() => router.push(`/nunu/events/${event.id}`)}
-                className="group block bg-white rounded-lg border border-stone-200 hover:border-sky-300 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+                className="group block bg-white rounded-xl border border-slate-200 hover:border-sky-300 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
               >
-                <div className="p-5 sm:p-6">
-                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className="px-2 py-0.5 bg-sky-50 text-sky-600 text-xs rounded border border-sky-100">
+                <div className="p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="px-2 py-0.5 bg-sky-50 text-sky-600 text-[10px] font-medium rounded-full">
                           即將舉辦
                         </span>
                         {event.preMeeting && (
-                          <span className="px-2 py-0.5 bg-stone-50 text-stone-500 text-xs rounded border border-stone-200">
+                          <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-[10px] rounded-full">
                             有行前會議
                           </span>
                         )}
                       </div>
-                      <h2 className="text-lg font-medium text-stone-800 mb-4">
+                      <h2 className="text-base font-medium text-slate-800 mb-2 truncate">
                         {event.title}
                       </h2>
-                      <div className="space-y-2 text-stone-500 text-sm">
+                      <div className="space-y-1 text-slate-500 text-sm">
                         <div className="flex items-center gap-2">
-                          <span className="w-4 text-center text-stone-400">📅</span>
+                          <span className="text-slate-400">📅</span>
                           <span>
                             {eventDate.toLocaleDateString('zh-TW', {
-                              year: 'numeric',
-                              month: 'long',
+                              month: 'short',
                               day: 'numeric',
                               weekday: 'short'
                             })}
                           </span>
+                          <span className="text-slate-300">·</span>
+                          <span>{event.startTime}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="w-4 text-center text-stone-400">🕐</span>
-                          <span>{event.startTime} ~ {event.endTime}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="w-4 text-center text-stone-400">📍</span>
+                          <span className="text-slate-400">📍</span>
                           <span>{event.location}</span>
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-col items-end gap-2 shrink-0">
                       <Link
                         href={`/nunu/events/${event.id}/run`}
                         onClick={(e) => e.stopPropagation()}
@@ -74,7 +71,7 @@ export default function NunuPage() {
                       >
                         執行
                       </Link>
-                      <div className="flex items-center text-sky-500 text-sm group-hover:text-sky-600 transition-colors">
+                      <div className="flex items-center text-sky-500 text-xs group-hover:text-sky-600 transition-colors">
                         <span>詳情</span>
                         <span className="ml-1 group-hover:translate-x-1 transition-transform duration-200">→</span>
                       </div>
@@ -87,7 +84,7 @@ export default function NunuPage() {
         </div>
 
         {nunuEvents.length === 0 && (
-          <div className="text-center py-16 text-stone-400">
+          <div className="text-center py-16 text-slate-400">
             目前沒有活動
           </div>
         )}
