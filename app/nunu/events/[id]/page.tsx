@@ -189,8 +189,12 @@ export default function NunuEventDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="text-slate-400">載入中...</div>
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-4">
+        <div className="relative w-12 h-12">
+          <div className="absolute inset-0 rounded-full border-4 border-slate-200"></div>
+          <div className="absolute inset-0 rounded-full border-4 border-sky-500 border-t-transparent animate-spin"></div>
+        </div>
+        <div className="text-slate-400 animate-pulse">載入中...</div>
       </div>
     );
   }
@@ -203,7 +207,7 @@ export default function NunuEventDetailPage() {
           <div className="flex items-center gap-4">
             <Link
               href="/nunu"
-              className="text-slate-400 hover:text-slate-600 transition-colors"
+              className="text-slate-400 hover:text-slate-600 hover:-translate-x-1 transition-all duration-200"
             >
               ←
             </Link>

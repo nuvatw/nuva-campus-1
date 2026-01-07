@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown, { Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { nunuEvents } from '@/app/data/nunu-events';
 
@@ -16,12 +16,25 @@ interface ContentSection {
   color: string;
 }
 
+interface ScheduleTab {
+  id: string;
+  title: string;
+  icon: string;
+  file: string;
+}
+
 const sections: ContentSection[] = [
   { id: 'yourator-info', title: 'Yourator 活動資訊', subtitle: 'Event Info', icon: '🎪', color: 'sky' },
   { id: 'schedule', title: '活動細流', subtitle: 'Schedule', icon: '⏰', color: 'rose' },
   { id: 'irreplaceable-wall', title: '不可取代牆', subtitle: 'Irreplaceable Wall', icon: '🧱', color: 'emerald' },
   { id: 'ai-time-capsule', title: 'AI 時光膠囊', subtitle: 'AI Time Capsule', icon: '💊', color: 'violet' },
   { id: 'qa', title: 'Q&A', subtitle: 'Questions & Answers', icon: '🙋', color: 'amber' },
+];
+
+const scheduleTabs: ScheduleTab[] = [
+  { id: 'morning', title: '上午', icon: '🌅', file: 'schedule-morning.md' },
+  { id: 'afternoon', title: '下午', icon: '☀️', file: 'schedule-afternoon.md' },
+  { id: 'evening', title: '晚上', icon: '🌙', file: 'schedule-evening.md' },
 ];
 
 const colorClasses: Record<string, { bg: string; text: string; activeBg: string }> = {
@@ -38,14 +51,72 @@ export default function NunuEventRunPage() {
   const event = nunuEvents.find((e) => e.id === id);
 
   const [activeSection, setActiveSection] = useState(sections[0].id);
+  const [activeScheduleTab, setActiveScheduleTab] = useState(scheduleTabs[0].id);
   const [contents, setContents] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
+  const [activeRowId, setActiveRowId] = useState<string | null>(null);
+  const navRef = useRef<HTMLDivElement>(null);
+  const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const rowIdCounter = useRef(0);
+
+  // Reset active row on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      if (activeRowId) {
+        setActiveRowId(null);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [activeRowId]);
+
+  // Reset active row when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('tr')) {
+        setActiveRowId(null);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
+  // Reset row counter when content changes
+  useEffect(() => {
+    rowIdCounter.current = 0;
+  }, [activeSection, activeScheduleTab]);
+
+  // Update indicator position when active section changes
+  useEffect(() => {
+    const updateIndicator = () => {
+      const activeIndex = sections.findIndex(s => s.id === activeSection);
+      const activeButton = buttonRefs.current[activeIndex];
+      if (activeButton && navRef.current) {
+        const navRect = navRef.current.getBoundingClientRect();
+        const buttonRect = activeButton.getBoundingClientRect();
+        setIndicatorStyle({
+          left: buttonRect.left - navRect.left,
+          width: buttonRect.width,
+        });
+      }
+    };
+
+    updateIndicator();
+    window.addEventListener('resize', updateIndicator);
+    return () => window.removeEventListener('resize', updateIndicator);
+  }, [activeSection]);
 
   useEffect(() => {
     async function fetchContents() {
       const files = [
         'yourator-info.md',
-        'schedule.md',
+        'schedule-morning.md',
+        'schedule-afternoon.md',
+        'schedule-evening.md',
         'irreplaceable-wall.md',
         'ai-time-capsule.md',
         'qa.md',
@@ -80,6 +151,42 @@ export default function NunuEventRunPage() {
   const currentSection = sections.find((s) => s.id === activeSection)!;
   const colors = colorClasses[currentSection.color];
 
+  // Get the content to display
+  const getDisplayContent = () => {
+    if (activeSection === 'schedule') {
+      const scheduleFile = `schedule-${activeScheduleTab}`;
+      return contents[scheduleFile] || '*內容尚未設定*';
+    }
+    return contents[activeSection] || '*內容尚未設定*';
+  };
+
+  // Custom markdown components for table row hover effect
+  const markdownComponents: Components = {
+    tr: ({ children, ...props }) => {
+      const rowId = `row-${rowIdCounter.current++}`;
+      const isActive = activeRowId === rowId;
+      const isHeader = props.node?.position?.start.line === 1;
+
+      if (isHeader) {
+        return <tr {...props}>{children}</tr>;
+      }
+
+      return (
+        <tr
+          {...props}
+          onClick={() => setActiveRowId(isActive ? null : rowId)}
+          className={`
+            transition-colors duration-200 cursor-pointer
+            hover:bg-rose-50
+            ${isActive ? 'bg-rose-100' : ''}
+          `}
+        >
+          {children}
+        </tr>
+      );
+    },
+  };
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
       {/* Header */}
@@ -88,7 +195,7 @@ export default function NunuEventRunPage() {
           <div className="flex items-center gap-4">
             <Link
               href={`/nunu/events/${id}`}
-              className="text-slate-400 hover:text-slate-600 transition-colors"
+              className="text-slate-400 hover:text-slate-600 hover:-translate-x-1 transition-all duration-200"
             >
               ←
             </Link>
@@ -105,28 +212,45 @@ export default function NunuEventRunPage() {
         </div>
       </header>
 
-      {/* Navigation Tabs */}
+      {/* Navigation Tabs - Connected Switch Style */}
       <nav className="bg-white border-b border-slate-200 sticky top-[57px] z-30">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <div className="flex gap-1 sm:gap-2 py-2 overflow-x-auto scrollbar-hide justify-center sm:justify-start">
-            {sections.map((section) => {
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3">
+          <div
+            ref={navRef}
+            className="relative inline-flex bg-slate-100 rounded-xl p-1 w-full sm:w-auto"
+          >
+            {/* Sliding Indicator */}
+            <div
+              className="absolute top-1 bottom-1 rounded-lg bg-white shadow-md transition-all duration-300 ease-out"
+              style={{
+                left: indicatorStyle.left,
+                width: indicatorStyle.width,
+              }}
+            />
+
+            {/* Buttons */}
+            {sections.map((section, index) => {
               const isActive = activeSection === section.id;
               const sectionColors = colorClasses[section.color];
 
               return (
                 <button
                   key={section.id}
+                  ref={(el) => { buttonRefs.current[index] = el; }}
                   onClick={() => setActiveSection(section.id)}
                   className={`
-                    flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap
-                    transition-all duration-300 ease-out
+                    relative z-10 flex items-center justify-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap
+                    transition-colors duration-200
+                    flex-1 sm:flex-none
                     ${isActive
-                      ? `${sectionColors.activeBg} text-white shadow-lg`
-                      : `${sectionColors.bg} ${sectionColors.text} hover:opacity-80`
+                      ? `${sectionColors.text}`
+                      : 'text-slate-500 hover:text-slate-700'
                     }
                   `}
                 >
-                  <span className="text-lg">{section.icon}</span>
+                  <span className={`text-lg transition-transform duration-200 ${isActive ? 'scale-110' : ''}`}>
+                    {section.icon}
+                  </span>
                   <span className="hidden sm:inline">{section.title}</span>
                 </button>
               );
@@ -139,8 +263,12 @@ export default function NunuEventRunPage() {
       <main className="flex-1">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
           {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <div className="text-slate-400">載入中...</div>
+            <div className="flex flex-col items-center justify-center py-20 gap-4">
+              <div className="relative w-12 h-12">
+                <div className="absolute inset-0 rounded-full border-4 border-slate-200"></div>
+                <div className="absolute inset-0 rounded-full border-4 border-sky-500 border-t-transparent animate-spin"></div>
+              </div>
+              <div className="text-slate-400 animate-pulse">載入中...</div>
             </div>
           ) : (
             <div
@@ -160,10 +288,39 @@ export default function NunuEventRunPage() {
                 </div>
               </div>
 
+              {/* Schedule Sub-tabs */}
+              {activeSection === 'schedule' && (
+                <div className="flex gap-2 mb-6">
+                  {scheduleTabs.map((tab) => {
+                    const isActive = activeScheduleTab === tab.id;
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveScheduleTab(tab.id)}
+                        className={`
+                          flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium
+                          transition-all duration-200
+                          ${isActive
+                            ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/25'
+                            : 'bg-rose-50 text-rose-600 hover:bg-rose-100'
+                          }
+                        `}
+                      >
+                        <span>{tab.icon}</span>
+                        <span>{tab.title}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
               {/* Markdown Content */}
               <article className="prose prose-lg max-w-none">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {contents[activeSection] || '*內容尚未設定*'}
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={activeSection === 'schedule' ? markdownComponents : undefined}
+                >
+                  {getDisplayContent()}
                 </ReactMarkdown>
               </article>
             </div>

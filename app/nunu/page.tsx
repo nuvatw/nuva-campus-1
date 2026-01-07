@@ -26,7 +26,7 @@ export default function NunuPage() {
               <div
                 key={event.id}
                 onClick={() => router.push(`/nunu/events/${event.id}`)}
-                className="block bg-white rounded-lg border border-stone-200 hover:border-sky-300 hover:shadow-sm transition-all cursor-pointer"
+                className="group block bg-white rounded-lg border border-stone-200 hover:border-sky-300 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
               >
                 <div className="p-5 sm:p-6">
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
@@ -74,9 +74,9 @@ export default function NunuPage() {
                       >
                         執行
                       </Link>
-                      <div className="flex items-center text-sky-500 text-sm">
+                      <div className="flex items-center text-sky-500 text-sm group-hover:text-sky-600 transition-colors">
                         <span>詳情</span>
-                        <span className="ml-1">→</span>
+                        <span className="ml-1 group-hover:translate-x-1 transition-transform duration-200">→</span>
                       </div>
                     </div>
                   </div>

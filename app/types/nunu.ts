@@ -34,3 +34,15 @@ export interface NunuEventRegistration {
 export type ShirtSize = 'S' | 'M' | 'L' | 'XL' | '2XL';
 
 export const SHIRT_SIZES: ShirtSize[] = ['S', 'M', 'L', 'XL', '2XL'];
+
+export type CheckinStatus = 'checked_in' | 'cancelled';
+
+export interface NunuEventCheckin {
+  id: string;
+  event_id: string;
+  registration_id: string;
+  checked_in_at: string;
+  status: CheckinStatus;
+  created_at: string;
+  updated_at: string;
+}

@@ -50,23 +50,23 @@ const config: Config = {
             li: {
               color: '#1e293b',
             },
-            'thead th': {
-              color: '#0f172a',
-              fontWeight: '600',
-              backgroundColor: '#f1f5f9', // slate-100
-              padding: '0.75rem 1rem',
-              textAlign: 'center',
-            },
-            'tbody td': {
-              padding: '0.75rem 1rem',
-              color: '#1e293b',
-              textAlign: 'center',
-            },
             table: {
               borderCollapse: 'collapse',
               width: '100%',
             },
-            'thead th, tbody td': {
+            th: {
+              color: '#0f172a',
+              fontWeight: '600',
+              backgroundColor: '#f1f5f9', // slate-100
+              padding: '0.75rem 1rem',
+              textAlign: 'center !important',
+              borderWidth: '1px',
+              borderColor: '#e2e8f0', // slate-200
+            },
+            td: {
+              padding: '0.75rem 1rem',
+              color: '#1e293b',
+              textAlign: 'center !important',
               borderWidth: '1px',
               borderColor: '#e2e8f0', // slate-200
             },
