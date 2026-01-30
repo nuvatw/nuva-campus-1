@@ -4,7 +4,8 @@ import { createClient } from '@supabase/supabase-js';
 import { requireApiAuth } from '@/app/lib/api-auth';
 import { checkRateLimit } from '@/app/lib/rate-limit';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy initialization to avoid build-time errors
+const getResend = () => new Resend(process.env.RESEND_API_KEY);
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -46,7 +47,7 @@ export async function POST(request: NextRequest) {
 
     if (type === 'test') {
       // 發送測試郵件
-      const { error } = await resend.emails.send({
+      const { error } = await getResend().emails.send({
         from: 'NUVA Campus <noreply@meetnuva.com>',
         to: to || 'ceo@meetnuva.com',
         subject: `[測試] NUVA Campus 活動通知`,
@@ -102,7 +103,7 @@ export async function POST(request: NextRequest) {
 
       for (const reg of registrations) {
         try {
-          const { error: sendError } = await resend.emails.send({
+          const { error: sendError } = await getResend().emails.send({
             from: 'NUVA Campus <noreply@meetnuva.com>',
             to: reg.participant_email,
             subject: `NUVA Campus 活動報到資訊`,
