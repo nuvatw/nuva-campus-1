@@ -277,44 +277,8 @@ export default function CheckinPage() {
           </button>
         </div>
 
-        {/* 校園大使 */}
-        <div className="mb-8">
-          <h2 className="text-lg font-medium text-text-primary mb-4">
-            校園大使 ({filteredAmbassadors.length})
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-            {filteredAmbassadors.map((p) => (
-              <button
-                key={p.id}
-                onClick={() => handleCardClick(p)}
-                className={`p-4 rounded-xl border-2 text-left transition-all ${
-                  p.attended
-                    ? 'bg-success/10 border-success/30 opacity-60'
-                    : 'bg-bg-card border-border-light hover:border-primary hover:shadow-md'
-                }`}
-              >
-                <div className="text-2xl font-bold text-primary mb-1">
-                  #{p.ambassador_id}
-                </div>
-                <div className="text-sm font-medium text-text-primary truncate">
-                  {p.participant_name}
-                </div>
-                {p.attended && (
-                  <div className="text-xs text-success mt-1">✓ 已報到</div>
-                )}
-              </button>
-            ))}
-          </div>
-          {filteredAmbassadors.length === 0 && (
-            <p className="text-text-muted text-center py-8">
-              {filterMode === 'pending' ? '所有校園大使都已報到' :
-               filterMode === 'completed' ? '尚無校園大使報到' : '沒有校園大使'}
-            </p>
-          )}
-        </div>
-
         {/* 努努 */}
-        <div>
+        <div className="mb-8">
           <h2 className="text-lg font-medium text-text-primary mb-4">
             努努 ({filteredNunus.length})
           </h2>
@@ -345,6 +309,42 @@ export default function CheckinPage() {
             <p className="text-text-muted text-center py-8">
               {filterMode === 'pending' ? '所有努努都已報到' :
                filterMode === 'completed' ? '尚無努努報到' : '沒有努努'}
+            </p>
+          )}
+        </div>
+
+        {/* 校園大使 */}
+        <div>
+          <h2 className="text-lg font-medium text-text-primary mb-4">
+            校園大使 ({filteredAmbassadors.length})
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            {filteredAmbassadors.map((p) => (
+              <button
+                key={p.id}
+                onClick={() => handleCardClick(p)}
+                className={`p-4 rounded-xl border-2 text-left transition-all ${
+                  p.attended
+                    ? 'bg-success/10 border-success/30 opacity-60'
+                    : 'bg-bg-card border-border-light hover:border-primary hover:shadow-md'
+                }`}
+              >
+                <div className="text-2xl font-bold text-primary mb-1">
+                  #{p.ambassador_id}
+                </div>
+                <div className="text-sm font-medium text-text-primary truncate">
+                  {p.participant_name}
+                </div>
+                {p.attended && (
+                  <div className="text-xs text-success mt-1">✓ 已報到</div>
+                )}
+              </button>
+            ))}
+          </div>
+          {filteredAmbassadors.length === 0 && (
+            <p className="text-text-muted text-center py-8">
+              {filterMode === 'pending' ? '所有校園大使都已報到' :
+               filterMode === 'completed' ? '尚無校園大使報到' : '沒有校園大使'}
             </p>
           )}
         </div>

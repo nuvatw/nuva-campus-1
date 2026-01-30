@@ -279,44 +279,8 @@ export default function LunchPage() {
           </button>
         </div>
 
-        {/* 校園大使 */}
-        <div className="mb-8">
-          <h2 className="text-lg font-medium text-text-primary mb-4">
-            校園大使 ({filteredAmbassadors.length})
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-            {filteredAmbassadors.map((p) => (
-              <button
-                key={p.id}
-                onClick={() => handleCardClick(p)}
-                className={`p-4 rounded-xl border-2 text-left transition-all ${
-                  p.lunch_collected
-                    ? 'bg-success/10 border-success/30 opacity-60'
-                    : 'bg-bg-card border-border-light hover:border-primary hover:shadow-md'
-                }`}
-              >
-                <div className="text-2xl font-bold text-primary mb-1">
-                  #{p.ambassador_id}
-                </div>
-                <div className="text-sm font-medium text-text-primary truncate">
-                  {p.participant_name}
-                </div>
-                {p.lunch_collected && (
-                  <div className="text-xs text-success mt-1">✓ 已領取</div>
-                )}
-              </button>
-            ))}
-          </div>
-          {filteredAmbassadors.length === 0 && (
-            <p className="text-text-muted text-center py-8">
-              {filterMode === 'pending' ? '所有校園大使都已領取' :
-               filterMode === 'completed' ? '尚無校園大使領取' : '沒有需便當的校園大使'}
-            </p>
-          )}
-        </div>
-
         {/* 努努 */}
-        <div>
+        <div className="mb-8">
           <h2 className="text-lg font-medium text-text-primary mb-4">
             努努 ({filteredNunus.length})
           </h2>
@@ -347,6 +311,42 @@ export default function LunchPage() {
             <p className="text-text-muted text-center py-8">
               {filterMode === 'pending' ? '所有努努都已領取' :
                filterMode === 'completed' ? '尚無努努領取' : '沒有需便當的努努'}
+            </p>
+          )}
+        </div>
+
+        {/* 校園大使 */}
+        <div>
+          <h2 className="text-lg font-medium text-text-primary mb-4">
+            校園大使 ({filteredAmbassadors.length})
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            {filteredAmbassadors.map((p) => (
+              <button
+                key={p.id}
+                onClick={() => handleCardClick(p)}
+                className={`p-4 rounded-xl border-2 text-left transition-all ${
+                  p.lunch_collected
+                    ? 'bg-success/10 border-success/30 opacity-60'
+                    : 'bg-bg-card border-border-light hover:border-primary hover:shadow-md'
+                }`}
+              >
+                <div className="text-2xl font-bold text-primary mb-1">
+                  #{p.ambassador_id}
+                </div>
+                <div className="text-sm font-medium text-text-primary truncate">
+                  {p.participant_name}
+                </div>
+                {p.lunch_collected && (
+                  <div className="text-xs text-success mt-1">✓ 已領取</div>
+                )}
+              </button>
+            ))}
+          </div>
+          {filteredAmbassadors.length === 0 && (
+            <p className="text-text-muted text-center py-8">
+              {filterMode === 'pending' ? '所有校園大使都已領取' :
+               filterMode === 'completed' ? '尚無校園大使領取' : '沒有需便當的校園大使'}
             </p>
           )}
         </div>
