@@ -19,7 +19,10 @@ interface Participant {
 }
 
 async function fetchParticipants(eventId: string): Promise<Participant[]> {
-  if (!isSupabaseConfigured) return [];
+  if (!isSupabaseConfigured) {
+    console.error('Supabase not configured');
+    throw new Error('Supabase 未設定');
+  }
 
   const { data, error } = await supabase
     .from('event_registrations')
@@ -30,7 +33,7 @@ async function fetchParticipants(eventId: string): Promise<Participant[]> {
 
   if (error) {
     console.error('Fetch error:', error);
-    return [];
+    throw new Error(error.message);
   }
 
   return data || [];
@@ -262,13 +265,27 @@ export default function LunchPage() {
           )}
         </div>
 
+        {/* Error info */}
+        {error && (
+          <div className="mt-8 p-4 bg-error/10 rounded-lg text-sm text-error">
+            <p className="font-medium mb-2">資料載入失敗</p>
+            <p className="text-text-muted">{error.message}</p>
+            <button
+              onClick={() => mutate(`lunch-participants-${eventId}`)}
+              className="mt-3 text-primary hover:underline"
+            >
+              重新載入
+            </button>
+          </div>
+        )}
+
         {/* Debug info */}
-        {totalCount === 0 && (
+        {!error && totalCount === 0 && (
           <div className="mt-8 p-4 bg-warning/10 rounded-lg text-sm text-warning">
             <p className="font-medium mb-2">沒有找到需要便當的參與者</p>
-            <p className="text-text-muted">請確認：</p>
+            <p className="text-text-muted">請確認 Supabase RLS 設定，或資料條件：</p>
             <ul className="list-disc list-inside text-text-muted mt-1">
-              <li>event_registrations 表中有 event_id = &quot;{eventId}&quot; 的資料</li>
+              <li>event_id = &quot;{eventId}&quot;</li>
               <li>attendance_mode = &quot;offline&quot;</li>
               <li>lunch_box_required = true</li>
             </ul>

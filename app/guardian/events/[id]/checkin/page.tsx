@@ -18,7 +18,10 @@ interface Participant {
 }
 
 async function fetchParticipants(eventId: string): Promise<Participant[]> {
-  if (!isSupabaseConfigured) return [];
+  if (!isSupabaseConfigured) {
+    console.error('Supabase not configured');
+    throw new Error('Supabase 未設定');
+  }
 
   const { data, error } = await supabase
     .from('event_registrations')
@@ -28,7 +31,7 @@ async function fetchParticipants(eventId: string): Promise<Participant[]> {
 
   if (error) {
     console.error('Fetch error:', error);
-    return [];
+    throw new Error(error.message);
   }
 
   return data || [];
@@ -58,7 +61,7 @@ export default function CheckinPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showOnlyPending, setShowOnlyPending] = useState(true);
 
-  const { data: participants, isLoading: dataLoading } = useSWR(
+  const { data: participants, isLoading: dataLoading, error } = useSWR(
     eventId ? `checkin-participants-${eventId}` : null,
     () => fetchParticipants(eventId),
     { refreshInterval: 10000 }
@@ -254,6 +257,32 @@ export default function CheckinPage() {
             </p>
           )}
         </div>
+
+        {/* Error info */}
+        {error && (
+          <div className="mt-8 p-4 bg-error/10 rounded-lg text-sm text-error">
+            <p className="font-medium mb-2">資料載入失敗</p>
+            <p className="text-text-muted">{error.message}</p>
+            <button
+              onClick={() => mutate(`checkin-participants-${eventId}`)}
+              className="mt-3 text-primary hover:underline"
+            >
+              重新載入
+            </button>
+          </div>
+        )}
+
+        {/* Debug info */}
+        {!error && totalCount === 0 && (
+          <div className="mt-8 p-4 bg-warning/10 rounded-lg text-sm text-warning">
+            <p className="font-medium mb-2">沒有找到參與者</p>
+            <p className="text-text-muted">請確認 Supabase RLS 設定，或資料條件：</p>
+            <ul className="list-disc list-inside text-text-muted mt-1">
+              <li>event_id = &quot;{eventId}&quot;</li>
+              <li>attendance_mode = &quot;offline&quot;</li>
+            </ul>
+          </div>
+        )}
       </div>
 
       {/* 報到確認 Modal */}
