@@ -117,6 +117,34 @@ export default function LunchPage() {
     }
   };
 
+  const handleUndoCollect = async (participant: Participant) => {
+    if (!participant.lunch_collected) {
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const { error } = await supabase
+        .from('event_registrations')
+        .update({
+          lunch_collected: false,
+          lunch_collected_at: null,
+        })
+        .eq('id', participant.id);
+
+      if (error) throw error;
+
+      showToast('success', `${participant.participant_name} 已撤銷領取`);
+      mutate(`lunch-participants-${eventId}`);
+      setShowModal(false);
+      setSelectedParticipant(null);
+    } catch {
+      showToast('error', '撤銷失敗，請重試');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleCardClick = (participant: Participant) => {
     setSelectedParticipant(participant);
     setShowModal(true);
@@ -266,6 +294,17 @@ export default function LunchPage() {
                 fullWidth
               >
                 確認領取
+              </Button>
+            )}
+            {selectedParticipant && selectedParticipant.lunch_collected && (
+              <Button
+                variant="secondary"
+                onClick={() => handleUndoCollect(selectedParticipant)}
+                isLoading={isLoading}
+                fullWidth
+                className="!bg-error/10 !text-error !border-error/30 hover:!bg-error/20"
+              >
+                撤銷領取
               </Button>
             )}
           </div>

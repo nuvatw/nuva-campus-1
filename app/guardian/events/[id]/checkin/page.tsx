@@ -110,6 +110,34 @@ export default function CheckinPage() {
     }
   };
 
+  const handleUndoCheckin = async (participant: Participant) => {
+    if (!participant.attended) {
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const { error } = await supabase
+        .from('event_registrations')
+        .update({
+          attended: false,
+          attended_at: null,
+        })
+        .eq('id', participant.id);
+
+      if (error) throw error;
+
+      showToast('success', `${participant.participant_name} 已撤銷報到`);
+      mutate(`checkin-participants-${eventId}`);
+      setShowModal(false);
+      setSelectedParticipant(null);
+    } catch {
+      showToast('error', '撤銷失敗，請重試');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleCardClick = (participant: Participant) => {
     setSelectedParticipant(participant);
     setShowModal(true);
@@ -246,6 +274,17 @@ export default function CheckinPage() {
                 fullWidth
               >
                 確認報到
+              </Button>
+            )}
+            {selectedParticipant && selectedParticipant.attended && (
+              <Button
+                variant="secondary"
+                onClick={() => handleUndoCheckin(selectedParticipant)}
+                isLoading={isLoading}
+                fullWidth
+                className="!bg-error/10 !text-error !border-error/30 hover:!bg-error/20"
+              >
+                撤銷報到
               </Button>
             )}
           </div>
