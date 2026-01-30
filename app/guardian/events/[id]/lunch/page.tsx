@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import useSWR, { mutate } from 'swr';
 import { supabase, isSupabaseConfigured } from '@/app/lib/supabase';
-import { NumericKeypad, CodeInput, Button, Modal, useToast } from '@/app/components/ui';
+import { Button, Modal, useToast } from '@/app/components/ui';
 
 interface Participant {
   id: string;
@@ -18,44 +18,31 @@ interface Participant {
   member_type: string;
 }
 
-async function fetchStats(eventId: string) {
-  if (!isSupabaseConfigured) return { total: 0, collected: 0 };
-
-  const { data } = await supabase
-    .from('event_registrations')
-    .select('lunch_box_required, lunch_collected, attendance_mode')
-    .eq('event_id', eventId)
-    .eq('attendance_mode', 'offline')
-    .eq('lunch_box_required', true);
-
-  return {
-    total: data?.length || 0,
-    collected: data?.filter(r => r.lunch_collected).length || 0,
-  };
-}
-
 async function fetchParticipants(eventId: string): Promise<Participant[]> {
   if (!isSupabaseConfigured) return [];
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('event_registrations')
     .select('id, participant_name, participant_email, lunch_collected, lunch_box_required, ambassador_id, attendance_mode, member_type')
     .eq('event_id', eventId)
     .eq('attendance_mode', 'offline')
-    .eq('lunch_box_required', true)
-    .order('ambassador_id', { ascending: true, nullsFirst: false });
+    .eq('lunch_box_required', true);
+
+  if (error) {
+    console.error('Fetch error:', error);
+    return [];
+  }
 
   return data || [];
 }
 
 function LoadingSkeleton() {
   return (
-    <div className="py-8 px-6 min-h-[calc(100vh-120px)]">
+    <div className="py-8 px-6">
       <div className="max-w-4xl mx-auto">
-        <div className="h-8 w-32 bg-bg-secondary rounded mx-auto mb-8 animate-pulse" />
-        <div className="flex justify-center gap-3 mb-8">
-          {[0, 1, 2].map(i => (
-            <div key={i} className="w-14 h-16 bg-bg-secondary rounded-lg animate-pulse" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          {[...Array(10)].map((_, i) => (
+            <div key={i} className="h-24 bg-bg-secondary rounded-xl animate-pulse" />
           ))}
         </div>
       </div>
@@ -68,75 +55,38 @@ export default function LunchPage() {
   const eventId = params.id as string;
   const { showToast } = useToast();
 
-  const [code, setCode] = useState<string[]>(['', '', '']);
   const [selectedParticipant, setSelectedParticipant] = useState<Participant | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showOnlyPending, setShowOnlyPending] = useState(true);
 
-  const { data: stats, isLoading: statsLoading } = useSWR(
-    eventId ? `lunch-stats-${eventId}` : null,
-    () => fetchStats(eventId),
-    { refreshInterval: 10000 }
-  );
-
-  const { data: participants } = useSWR(
+  const { data: participants, isLoading: dataLoading, error } = useSWR(
     eventId ? `lunch-participants-${eventId}` : null,
     () => fetchParticipants(eventId),
     { refreshInterval: 10000 }
   );
 
+  // Debug log
+  if (error) {
+    console.error('SWR error:', error);
+  }
+
   // 分類參與者
   const ambassadors = (participants || [])
-    .filter(p => p.member_type === 'ambassador')
+    .filter(p => p.member_type === 'ambassador' && p.ambassador_id)
     .sort((a, b) => parseInt(a.ambassador_id || '999') - parseInt(b.ambassador_id || '999'));
 
   const nunus = (participants || [])
     .filter(p => p.member_type === 'nunu')
     .sort((a, b) => a.participant_name.localeCompare(b.participant_name, 'zh-TW'));
 
-  // 過濾已領取
+  // 統計
+  const totalCount = (participants || []).length;
+  const collectedCount = (participants || []).filter(p => p.lunch_collected).length;
+
+  // 過濾
   const filteredAmbassadors = showOnlyPending ? ambassadors.filter(p => !p.lunch_collected) : ambassadors;
   const filteredNunus = showOnlyPending ? nunus.filter(p => !p.lunch_collected) : nunus;
-
-  const handleDigit = useCallback((digit: string) => {
-    setCode((prev) => {
-      const newCode = [...prev];
-      const emptyIndex = newCode.findIndex((d) => d === '');
-      if (emptyIndex !== -1) {
-        newCode[emptyIndex] = digit;
-      }
-      return newCode;
-    });
-  }, []);
-
-  const handleBackspace = useCallback(() => {
-    setCode((prev) => {
-      const newCode = [...prev];
-      for (let i = newCode.length - 1; i >= 0; i--) {
-        if (newCode[i] !== '') {
-          newCode[i] = '';
-          break;
-        }
-      }
-      return newCode;
-    });
-  }, []);
-
-  // 當輸入完 3 位數字，查找大使
-  useEffect(() => {
-    const fullCode = code.join('');
-    if (fullCode.length === 3) {
-      const found = ambassadors.find(p => p.ambassador_id === fullCode);
-      if (found) {
-        setSelectedParticipant(found);
-        setShowModal(true);
-      } else {
-        showToast('error', `找不到大使編號 ${fullCode} 或該大使不需要便當`);
-        setCode(['', '', '']);
-      }
-    }
-  }, [code, ambassadors, showToast]);
 
   const handleCollect = async (participant: Participant) => {
     if (participant.lunch_collected) {
@@ -157,11 +107,9 @@ export default function LunchPage() {
       if (error) throw error;
 
       showToast('success', `${participant.participant_name} 便當領取成功`);
-      mutate(`lunch-stats-${eventId}`);
       mutate(`lunch-participants-${eventId}`);
       setShowModal(false);
       setSelectedParticipant(null);
-      setCode(['', '', '']);
     } catch {
       showToast('error', '領取失敗，請重試');
     } finally {
@@ -169,7 +117,7 @@ export default function LunchPage() {
     }
   };
 
-  const handleRowClick = (participant: Participant) => {
+  const handleCardClick = (participant: Participant) => {
     setSelectedParticipant(participant);
     setShowModal(true);
   };
@@ -177,15 +125,14 @@ export default function LunchPage() {
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedParticipant(null);
-    setCode(['', '', '']);
   };
 
-  if (statsLoading || !stats) {
+  if (dataLoading) {
     return <LoadingSkeleton />;
   }
 
   return (
-    <div className="py-8 px-6 min-h-[calc(100vh-120px)]">
+    <div className="py-8 px-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -198,134 +145,107 @@ export default function LunchPage() {
             </svg>
             <span className="text-sm">返回</span>
           </Link>
+          <h1 className="text-xl font-semibold text-text-primary">便當領取</h1>
           <div className="text-text-secondary">
-            已領取 <span className="font-medium text-text-primary">{stats.collected}</span> / {stats.total}
+            <span className="font-medium text-primary">{collectedCount}</span> / {totalCount}
           </div>
         </div>
 
-        {/* Section 1: 大使編號輸入 */}
-        <div className="card mb-8">
-          <h2 className="text-lg font-semibold text-text-primary mb-4 text-center">
-            輸入大使編號領取便當
+        {/* Filter */}
+        <div className="flex justify-end mb-4">
+          <label className="flex items-center gap-2 text-sm cursor-pointer">
+            <input
+              type="checkbox"
+              checked={showOnlyPending}
+              onChange={(e) => setShowOnlyPending(e.target.checked)}
+              className="rounded border-border-light"
+            />
+            <span className="text-text-secondary">只顯示尚未領取</span>
+          </label>
+        </div>
+
+        {/* 校園大使 */}
+        <div className="mb-8">
+          <h2 className="text-lg font-medium text-text-primary mb-4">
+            校園大使 ({filteredAmbassadors.length})
           </h2>
-          <div className="mb-6">
-            <CodeInput code={code} label="請輸入 3 位大使編號" />
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            {filteredAmbassadors.map((p) => (
+              <button
+                key={p.id}
+                onClick={() => handleCardClick(p)}
+                className={`p-4 rounded-xl border-2 text-left transition-all ${
+                  p.lunch_collected
+                    ? 'bg-success/10 border-success/30 opacity-60'
+                    : 'bg-bg-card border-border-light hover:border-primary hover:shadow-md'
+                }`}
+              >
+                <div className="text-2xl font-bold text-primary mb-1">
+                  #{p.ambassador_id}
+                </div>
+                <div className="text-sm font-medium text-text-primary truncate">
+                  {p.participant_name}
+                </div>
+                {p.lunch_collected && (
+                  <div className="text-xs text-success mt-1">✓ 已領取</div>
+                )}
+              </button>
+            ))}
           </div>
-          <NumericKeypad
-            onDigit={handleDigit}
-            onBackspace={handleBackspace}
-          />
+          {filteredAmbassadors.length === 0 && (
+            <p className="text-text-muted text-center py-8">
+              {showOnlyPending ? '所有校園大使都已領取 🎉' : '沒有需便當的校園大使'}
+            </p>
+          )}
         </div>
 
-        {/* Section 2: 參與者列表 */}
-        <div className="card">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-text-primary">
-              需便當者
-            </h2>
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={showOnlyPending}
-                onChange={(e) => setShowOnlyPending(e.target.checked)}
-                className="rounded border-border-light"
-              />
-              <span className="text-text-secondary">只顯示尚未領取</span>
-            </label>
+        {/* 努努 */}
+        <div>
+          <h2 className="text-lg font-medium text-text-primary mb-4">
+            努努 ({filteredNunus.length})
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            {filteredNunus.map((p) => (
+              <button
+                key={p.id}
+                onClick={() => handleCardClick(p)}
+                className={`p-4 rounded-xl border-2 text-left transition-all ${
+                  p.lunch_collected
+                    ? 'bg-success/10 border-success/30 opacity-60'
+                    : 'bg-bg-card border-border-light hover:border-primary hover:shadow-md'
+                }`}
+              >
+                <div className="text-sm font-medium text-text-primary truncate">
+                  {p.participant_name}
+                </div>
+                <div className="text-xs text-text-muted truncate mt-1">
+                  {p.participant_email}
+                </div>
+                {p.lunch_collected && (
+                  <div className="text-xs text-success mt-1">✓ 已領取</div>
+                )}
+              </button>
+            ))}
           </div>
-
-          {/* 校園大使 */}
-          <div className="mb-6">
-            <h3 className="text-sm font-medium text-text-muted mb-2">
-              校園大使 ({filteredAmbassadors.length})
-            </h3>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border-light">
-                    <th className="text-left py-2 px-3 text-text-muted font-medium w-20">大使</th>
-                    <th className="text-left py-2 px-3 text-text-muted font-medium">姓名</th>
-                    <th className="text-left py-2 px-3 text-text-muted font-medium">信箱</th>
-                    <th className="text-center py-2 px-3 text-text-muted font-medium w-16">狀態</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredAmbassadors.map((p) => (
-                    <tr
-                      key={p.id}
-                      onClick={() => handleRowClick(p)}
-                      className={`border-b border-border-light cursor-pointer transition-colors ${
-                        p.lunch_collected ? 'bg-success/5 opacity-60' : 'hover:bg-bg-secondary'
-                      }`}
-                    >
-                      <td className="py-3 px-3 font-mono font-medium text-primary">
-                        #{p.ambassador_id}
-                      </td>
-                      <td className="py-3 px-3 font-medium">{p.participant_name}</td>
-                      <td className="py-3 px-3 text-text-muted text-xs">{p.participant_email}</td>
-                      <td className="py-3 px-3 text-center">
-                        {p.lunch_collected ? (
-                          <span className="text-success">✓</span>
-                        ) : (
-                          <span className="text-text-muted">-</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {filteredAmbassadors.length === 0 && (
-                <p className="text-text-muted text-center py-4 text-sm">
-                  {showOnlyPending ? '所有校園大使都已領取' : '沒有需便當的校園大使'}
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* 努努 */}
-          <div>
-            <h3 className="text-sm font-medium text-text-muted mb-2">
-              努努 ({filteredNunus.length})
-            </h3>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border-light">
-                    <th className="text-left py-2 px-3 text-text-muted font-medium">姓名</th>
-                    <th className="text-left py-2 px-3 text-text-muted font-medium">信箱</th>
-                    <th className="text-center py-2 px-3 text-text-muted font-medium w-16">狀態</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredNunus.map((p) => (
-                    <tr
-                      key={p.id}
-                      onClick={() => handleRowClick(p)}
-                      className={`border-b border-border-light cursor-pointer transition-colors ${
-                        p.lunch_collected ? 'bg-success/5 opacity-60' : 'hover:bg-bg-secondary'
-                      }`}
-                    >
-                      <td className="py-3 px-3 font-medium">{p.participant_name}</td>
-                      <td className="py-3 px-3 text-text-muted text-xs">{p.participant_email}</td>
-                      <td className="py-3 px-3 text-center">
-                        {p.lunch_collected ? (
-                          <span className="text-success">✓</span>
-                        ) : (
-                          <span className="text-text-muted">-</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {filteredNunus.length === 0 && (
-                <p className="text-text-muted text-center py-4 text-sm">
-                  {showOnlyPending ? '所有努努都已領取' : '沒有需便當的努努'}
-                </p>
-              )}
-            </div>
-          </div>
+          {filteredNunus.length === 0 && (
+            <p className="text-text-muted text-center py-8">
+              {showOnlyPending ? '所有努努都已領取 🎉' : '沒有需便當的努努'}
+            </p>
+          )}
         </div>
+
+        {/* Debug info */}
+        {totalCount === 0 && (
+          <div className="mt-8 p-4 bg-warning/10 rounded-lg text-sm text-warning">
+            <p className="font-medium mb-2">沒有找到需要便當的參與者</p>
+            <p className="text-text-muted">請確認：</p>
+            <ul className="list-disc list-inside text-text-muted mt-1">
+              <li>event_registrations 表中有 event_id = &quot;{eventId}&quot; 的資料</li>
+              <li>attendance_mode = &quot;offline&quot;</li>
+              <li>lunch_box_required = true</li>
+            </ul>
+          </div>
+        )}
       </div>
 
       {/* 領取確認 Modal */}
@@ -360,7 +280,7 @@ export default function LunchPage() {
             {selectedParticipant.ambassador_id && (
               <div className="flex justify-between items-center py-2 border-b border-border-light">
                 <span className="text-text-muted">大使編號</span>
-                <span className="font-mono font-medium text-primary">#{selectedParticipant.ambassador_id}</span>
+                <span className="font-mono font-bold text-primary text-xl">#{selectedParticipant.ambassador_id}</span>
               </div>
             )}
             <div className="flex justify-between items-center py-2 border-b border-border-light">
@@ -368,8 +288,8 @@ export default function LunchPage() {
               <span className="text-text-primary text-sm">{selectedParticipant.participant_email}</span>
             </div>
             {selectedParticipant.lunch_collected && (
-              <div className="bg-success/10 text-success text-center py-2 rounded-lg">
-                已領取
+              <div className="bg-success/10 text-success text-center py-3 rounded-lg font-medium">
+                ✓ 已領取
               </div>
             )}
           </div>
