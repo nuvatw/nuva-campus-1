@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import useSWR, { mutate } from 'swr';
 import { supabase, isSupabaseConfigured } from '@/app/lib/supabase';
-import { Button, Modal, useToast } from '@/app/components/ui';
+import { Button, Modal, NumericKeypad, useToast } from '@/app/components/ui';
 
 interface Participant {
   id: string;
@@ -93,18 +93,29 @@ export default function CheckinPage() {
   const filteredAmbassadors = filterParticipants(ambassadors);
   const filteredNunus = filterParticipants(nunus);
 
-  // 快速查詢
-  const handleSearch = () => {
-    if (!searchId.trim()) return;
-
-    const found = ambassadors.find(p => p.ambassador_id === searchId.trim());
-    if (found) {
-      setSelectedParticipant(found);
-      setShowModal(true);
-      setSearchId('');
-    } else {
-      showToast('warning', `找不到大使編號 ${searchId}`);
+  // 自動查詢 - 輸入 3 位數時自動彈出
+  useEffect(() => {
+    if (searchId.length === 3) {
+      const found = ambassadors.find(p => p.ambassador_id === searchId);
+      if (found) {
+        setSelectedParticipant(found);
+        setShowModal(true);
+        setSearchId('');
+      } else {
+        showToast('warning', `找不到大使編號 ${searchId}`);
+        setSearchId('');
+      }
     }
+  }, [searchId, ambassadors, showToast]);
+
+  const handleDigit = (digit: string) => {
+    if (searchId.length < 3) {
+      setSearchId(prev => prev + digit);
+    }
+  };
+
+  const handleBackspace = () => {
+    setSearchId(prev => prev.slice(0, -1));
   };
 
   const handleCheckin = async (participant: Participant) => {
@@ -202,25 +213,34 @@ export default function CheckinPage() {
           </div>
         </div>
 
-        {/* Quick Search */}
+        {/* Quick Search with Keypad */}
         <div className="mb-6 p-4 bg-bg-card rounded-xl border border-border-light">
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            快速查詢（大使編號）
+          <label className="block text-sm font-medium text-text-primary mb-3 text-center">
+            輸入大使編號快速報到
           </label>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={searchId}
-              onChange={(e) => setSearchId(e.target.value.replace(/\D/g, '').slice(0, 3))}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              placeholder="輸入 3 位編號"
-              className="flex-1 px-4 py-2 rounded-lg border border-border-light bg-bg-primary text-text-primary text-center text-lg font-mono focus:outline-none focus:border-primary"
-              maxLength={3}
-            />
-            <Button onClick={handleSearch} disabled={!searchId.trim()}>
-              查詢
-            </Button>
+
+          {/* Display */}
+          <div className="flex justify-center gap-2 mb-4">
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                className={`w-14 h-16 rounded-lg border-2 flex items-center justify-center text-3xl font-bold ${
+                  searchId[i]
+                    ? 'border-primary bg-primary/5 text-primary'
+                    : 'border-border-light bg-bg-secondary text-text-muted'
+                }`}
+              >
+                {searchId[i] || ''}
+              </div>
+            ))}
           </div>
+
+          {/* Keypad */}
+          <NumericKeypad
+            onDigit={handleDigit}
+            onBackspace={handleBackspace}
+            size="lg"
+          />
         </div>
 
         {/* Filter */}
