@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import useSWR from 'swr';
-import { supabase } from '@/app/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/app/lib/supabase';
 
 interface EventInfo {
   id: string;
@@ -13,9 +13,19 @@ interface EventInfo {
 }
 
 async function fetchEvents(): Promise<EventInfo[]> {
-  const { data: registrations } = await supabase
+  if (!isSupabaseConfigured) {
+    console.error('Supabase not configured');
+    return [];
+  }
+
+  const { data: registrations, error } = await supabase
     .from('event_registrations')
     .select('event_id, lunch_box_required');
+
+  if (error) {
+    console.error('Supabase error:', error);
+    throw error;
+  }
 
   const eventStats: Record<string, { count: number; lunchCount: number }> = {};
 
@@ -40,8 +50,10 @@ async function fetchEvents(): Promise<EventInfo[]> {
 export default function GuardianPage() {
   const router = useRouter();
 
-  const { data: events, isLoading } = useSWR('guardian-events', fetchEvents, {
+  const { data: events, isLoading, error } = useSWR('guardian-events', fetchEvents, {
     revalidateOnFocus: false,
+    errorRetryCount: 2,
+    errorRetryInterval: 3000,
   });
 
   const handleEventClick = (eventId: string) => {
@@ -67,7 +79,18 @@ export default function GuardianPage() {
             進行中的活動
           </h2>
 
-          {isLoading ? (
+          {error ? (
+            <div className="text-center py-8">
+              <p className="text-error mb-4">載入失敗</p>
+              <p className="text-text-muted text-sm mb-4">{error.message}</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="text-primary hover:underline"
+              >
+                重新載入
+              </button>
+            </div>
+          ) : isLoading ? (
             <div className="space-y-4">
               <div className="card animate-pulse">
                 <div className="h-6 w-48 bg-bg-secondary rounded mb-3" />

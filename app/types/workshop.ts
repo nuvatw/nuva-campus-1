@@ -10,7 +10,9 @@ export interface Workshop {
   type: 'online' | 'offline';
   date: string;
   time: string;
+  checkinTime?: string;
   location: string;
+  locationUrl?: string;
   description?: string;
   registrationUrl?: string;
   liveUrl?: string;

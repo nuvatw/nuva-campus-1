@@ -133,13 +133,31 @@ export default function WorkshopDetailPage() {
                   <span className="text-lg sm:text-xl">📅</span>
                   <span>{new Date(workshop.date).toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short' })}</span>
                 </div>
+                {workshop.checkinTime && (
+                  <div className="flex items-center gap-3">
+                    <span className="text-lg sm:text-xl">✅</span>
+                    <span>報到時間：{workshop.checkinTime}</span>
+                  </div>
+                )}
                 <div className="flex items-center gap-3">
                   <span className="text-lg sm:text-xl">🕐</span>
                   <span>{workshop.time}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-lg sm:text-xl">📍</span>
-                  <span>{workshop.location}</span>
+                  <span>
+                    {workshop.location}
+                    {workshop.locationUrl && (
+                      <a
+                        href={workshop.locationUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ml-2 text-primary hover:underline"
+                      >
+                        (Google Map)
+                      </a>
+                    )}
+                  </span>
                 </div>
               </div>
             </div>

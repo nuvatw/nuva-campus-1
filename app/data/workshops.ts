@@ -7,7 +7,9 @@ export const workshops: Workshop[] = [
     type: 'offline',
     date: '2026-01-31',
     time: '09:30 ~ 17:00',
+    checkinTime: '09:00 ~ 09:15',
     location: '台北松山',
+    locationUrl: 'https://maps.app.goo.gl/jyRl4ahqVVZdlg2iR',
     description: '學習說故事的技巧，成為溝通高手',
     tallyFormId: '9qBWK4',
     schedule: [
