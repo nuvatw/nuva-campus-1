@@ -17,6 +17,8 @@ interface Participant {
   member_type: string;
 }
 
+type FilterMode = 'all' | 'pending' | 'completed';
+
 async function fetchParticipants(eventId: string): Promise<Participant[]> {
   if (!isSupabaseConfigured) {
     console.error('Supabase not configured');
@@ -59,7 +61,8 @@ export default function CheckinPage() {
   const [selectedParticipant, setSelectedParticipant] = useState<Participant | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [showOnlyPending, setShowOnlyPending] = useState(true);
+  const [filterMode, setFilterMode] = useState<FilterMode>('pending');
+  const [searchId, setSearchId] = useState('');
 
   const { data: participants, isLoading: dataLoading, error } = useSWR(
     eventId ? `checkin-participants-${eventId}` : null,
@@ -81,8 +84,28 @@ export default function CheckinPage() {
   const checkedInCount = (participants || []).filter(p => p.attended).length;
 
   // 過濾
-  const filteredAmbassadors = showOnlyPending ? ambassadors.filter(p => !p.attended) : ambassadors;
-  const filteredNunus = showOnlyPending ? nunus.filter(p => !p.attended) : nunus;
+  const filterParticipants = (list: Participant[]) => {
+    if (filterMode === 'pending') return list.filter(p => !p.attended);
+    if (filterMode === 'completed') return list.filter(p => p.attended);
+    return list;
+  };
+
+  const filteredAmbassadors = filterParticipants(ambassadors);
+  const filteredNunus = filterParticipants(nunus);
+
+  // 快速查詢
+  const handleSearch = () => {
+    if (!searchId.trim()) return;
+
+    const found = ambassadors.find(p => p.ambassador_id === searchId.trim());
+    if (found) {
+      setSelectedParticipant(found);
+      setShowModal(true);
+      setSearchId('');
+    } else {
+      showToast('warning', `找不到大使編號 ${searchId}`);
+    }
+  };
 
   const handleCheckin = async (participant: Participant) => {
     if (participant.attended) {
@@ -92,22 +115,28 @@ export default function CheckinPage() {
 
     setIsLoading(true);
     try {
-      const { error } = await supabase
+      const { error, data } = await supabase
         .from('event_registrations')
         .update({
           attended: true,
           attended_at: new Date().toISOString(),
         })
-        .eq('id', participant.id);
+        .eq('id', participant.id)
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Update error:', error);
+        throw new Error(error.message);
+      }
 
+      console.log('Update success:', data);
       showToast('success', `${participant.participant_name} 報到成功`);
       mutate(`checkin-participants-${eventId}`);
       setShowModal(false);
       setSelectedParticipant(null);
-    } catch {
-      showToast('error', '報到失敗，請重試');
+    } catch (err) {
+      console.error('Checkin failed:', err);
+      showToast('error', `報到失敗：${err instanceof Error ? err.message : '請重試'}`);
     } finally {
       setIsLoading(false);
     }
@@ -128,14 +157,18 @@ export default function CheckinPage() {
         })
         .eq('id', participant.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Undo error:', error);
+        throw new Error(error.message);
+      }
 
       showToast('success', `${participant.participant_name} 已撤銷報到`);
       mutate(`checkin-participants-${eventId}`);
       setShowModal(false);
       setSelectedParticipant(null);
-    } catch {
-      showToast('error', '撤銷失敗，請重試');
+    } catch (err) {
+      console.error('Undo failed:', err);
+      showToast('error', `撤銷失敗：${err instanceof Error ? err.message : '請重試'}`);
     } finally {
       setIsLoading(false);
     }
@@ -175,17 +208,59 @@ export default function CheckinPage() {
           </div>
         </div>
 
-        {/* Filter */}
-        <div className="flex justify-end mb-4">
-          <label className="flex items-center gap-2 text-sm cursor-pointer">
-            <input
-              type="checkbox"
-              checked={showOnlyPending}
-              onChange={(e) => setShowOnlyPending(e.target.checked)}
-              className="rounded border-border-light"
-            />
-            <span className="text-text-secondary">只顯示尚未報到</span>
+        {/* Quick Search */}
+        <div className="mb-6 p-4 bg-bg-card rounded-xl border border-border-light">
+          <label className="block text-sm font-medium text-text-primary mb-2">
+            快速查詢（大使編號）
           </label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={searchId}
+              onChange={(e) => setSearchId(e.target.value.replace(/\D/g, '').slice(0, 3))}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              placeholder="輸入 3 位編號"
+              className="flex-1 px-4 py-2 rounded-lg border border-border-light bg-bg-primary text-text-primary text-center text-lg font-mono focus:outline-none focus:border-primary"
+              maxLength={3}
+            />
+            <Button onClick={handleSearch} disabled={!searchId.trim()}>
+              查詢
+            </Button>
+          </div>
+        </div>
+
+        {/* Filter */}
+        <div className="flex justify-center gap-2 mb-6">
+          <button
+            onClick={() => setFilterMode('all')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              filterMode === 'all'
+                ? 'bg-primary text-white'
+                : 'bg-bg-secondary text-text-secondary hover:bg-bg-tertiary'
+            }`}
+          >
+            全部 ({totalCount})
+          </button>
+          <button
+            onClick={() => setFilterMode('pending')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              filterMode === 'pending'
+                ? 'bg-primary text-white'
+                : 'bg-bg-secondary text-text-secondary hover:bg-bg-tertiary'
+            }`}
+          >
+            尚未報到 ({totalCount - checkedInCount})
+          </button>
+          <button
+            onClick={() => setFilterMode('completed')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              filterMode === 'completed'
+                ? 'bg-primary text-white'
+                : 'bg-bg-secondary text-text-secondary hover:bg-bg-tertiary'
+            }`}
+          >
+            已報到 ({checkedInCount})
+          </button>
         </div>
 
         {/* 校園大使 */}
@@ -218,7 +293,8 @@ export default function CheckinPage() {
           </div>
           {filteredAmbassadors.length === 0 && (
             <p className="text-text-muted text-center py-8">
-              {showOnlyPending ? '所有校園大使都已報到 🎉' : '沒有校園大使'}
+              {filterMode === 'pending' ? '所有校園大使都已報到' :
+               filterMode === 'completed' ? '尚無校園大使報到' : '沒有校園大使'}
             </p>
           )}
         </div>
@@ -253,7 +329,8 @@ export default function CheckinPage() {
           </div>
           {filteredNunus.length === 0 && (
             <p className="text-text-muted text-center py-8">
-              {showOnlyPending ? '所有努努都已報到 🎉' : '沒有努努'}
+              {filterMode === 'pending' ? '所有努努都已報到' :
+               filterMode === 'completed' ? '尚無努努報到' : '沒有努努'}
             </p>
           )}
         </div>
