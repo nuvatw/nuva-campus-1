@@ -119,10 +119,7 @@ export default function LunchPage() {
     try {
       const { error, data } = await supabase
         .from('event_registrations')
-        .update({
-          lunch_collected: true,
-          lunch_collected_at: new Date().toISOString(),
-        })
+        .update({ lunch_collected: true })
         .eq('id', participant.id)
         .select();
 
@@ -153,10 +150,7 @@ export default function LunchPage() {
     try {
       const { error } = await supabase
         .from('event_registrations')
-        .update({
-          lunch_collected: false,
-          lunch_collected_at: null,
-        })
+        .update({ lunch_collected: false })
         .eq('id', participant.id);
 
       if (error) {

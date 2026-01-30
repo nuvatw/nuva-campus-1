@@ -117,10 +117,7 @@ export default function CheckinPage() {
     try {
       const { error, data } = await supabase
         .from('event_registrations')
-        .update({
-          attended: true,
-          attended_at: new Date().toISOString(),
-        })
+        .update({ attended: true })
         .eq('id', participant.id)
         .select();
 
@@ -151,10 +148,7 @@ export default function CheckinPage() {
     try {
       const { error } = await supabase
         .from('event_registrations')
-        .update({
-          attended: false,
-          attended_at: null,
-        })
+        .update({ attended: false })
         .eq('id', participant.id);
 
       if (error) {
