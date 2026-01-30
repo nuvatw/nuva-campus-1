@@ -72,11 +72,25 @@ export default function CheckinPage() {
 
   // 分類參與者
   const ambassadors = (participants || [])
-    .filter(p => p.member_type === 'ambassador' && p.ambassador_id)
-    .sort((a, b) => parseInt(a.ambassador_id || '999') - parseInt(b.ambassador_id || '999'));
+    .filter(p => p.member_type === 'ambassador')
+    .sort((a, b) => {
+      // 有編號的排前面，按編號排序
+      if (a.ambassador_id && b.ambassador_id) {
+        return parseInt(a.ambassador_id) - parseInt(b.ambassador_id);
+      }
+      if (a.ambassador_id) return -1;
+      if (b.ambassador_id) return 1;
+      // 沒編號的按姓名排序
+      return a.participant_name.localeCompare(b.participant_name, 'zh-TW');
+    });
 
   const nunus = (participants || [])
     .filter(p => p.member_type === 'nunu')
+    .sort((a, b) => a.participant_name.localeCompare(b.participant_name, 'zh-TW'));
+
+  // 其他（沒有設定 member_type 的參與者）
+  const others = (participants || [])
+    .filter(p => p.member_type !== 'ambassador' && p.member_type !== 'nunu')
     .sort((a, b) => a.participant_name.localeCompare(b.participant_name, 'zh-TW'));
 
   // 統計
@@ -92,6 +106,7 @@ export default function CheckinPage() {
 
   const filteredAmbassadors = filterParticipants(ambassadors);
   const filteredNunus = filterParticipants(nunus);
+  const filteredOthers = filterParticipants(others);
 
   // 自動查詢 - 輸入 3 位數時自動彈出
   useEffect(() => {
@@ -329,9 +344,13 @@ export default function CheckinPage() {
                     : 'bg-bg-card border-border-light hover:border-primary hover:shadow-md'
                 }`}
               >
-                <div className="text-2xl font-bold text-primary mb-1">
-                  #{p.ambassador_id}
-                </div>
+                {p.ambassador_id ? (
+                  <div className="text-2xl font-bold text-primary mb-1">
+                    #{p.ambassador_id}
+                  </div>
+                ) : (
+                  <div className="text-xs text-text-muted mb-1">無編號</div>
+                )}
                 <div className="text-sm font-medium text-text-primary truncate">
                   {p.participant_name}
                 </div>
@@ -348,6 +367,38 @@ export default function CheckinPage() {
             </p>
           )}
         </div>
+
+        {/* 其他參與者 */}
+        {others.length > 0 && (
+          <div className="mt-8">
+            <h2 className="text-lg font-medium text-text-primary mb-4">
+              其他 ({filteredOthers.length})
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+              {filteredOthers.map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => handleCardClick(p)}
+                  className={`p-4 rounded-xl border-2 text-left transition-all ${
+                    p.attended
+                      ? 'bg-success/10 border-success/30 opacity-60'
+                      : 'bg-bg-card border-border-light hover:border-primary hover:shadow-md'
+                  }`}
+                >
+                  <div className="text-sm font-medium text-text-primary truncate">
+                    {p.participant_name}
+                  </div>
+                  <div className="text-xs text-text-muted truncate mt-1">
+                    {p.participant_email}
+                  </div>
+                  {p.attended && (
+                    <div className="text-xs text-success mt-1">✓ 已報到</div>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Error info */}
         {error && (
