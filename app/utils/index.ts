@@ -2,4 +2,5 @@
  * 工具函數導出中心
  */
 
-export * from './authStorage';
+// 目前沒有其他工具函數
+export {};

@@ -1,12 +1,9 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import useSWR from 'swr';
 import { supabase } from '@/app/lib/supabase';
-import { PasswordModal } from '@/app/components/ui/PasswordModal';
-import type { PasswordKey } from '@/app/types/password';
 
 interface EventInfo {
   id: string;
@@ -42,23 +39,13 @@ async function fetchEvents(): Promise<EventInfo[]> {
 
 export default function GuardianPage() {
   const router = useRouter();
-  const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
-  const [showModal, setShowModal] = useState(false);
 
   const { data: events, isLoading } = useSWR('guardian-events', fetchEvents, {
     revalidateOnFocus: false,
   });
 
   const handleEventClick = (eventId: string) => {
-    setSelectedEvent(eventId);
-    setShowModal(true);
-  };
-
-  const handleSuccess = () => {
-    setShowModal(false);
-    if (selectedEvent) {
-      router.push(`/guardian/events/${selectedEvent}`);
-    }
+    router.push(`/guardian/events/${eventId}`);
   };
 
   return (
@@ -146,33 +133,8 @@ export default function GuardianPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </Link>
-
-          {/* 密碼管理入口 */}
-          <Link
-            href="/guardian/passwords"
-            className="flex items-center justify-between p-4 bg-bg-secondary rounded-xl hover:bg-bg-card transition-colors"
-          >
-            <div className="flex items-center gap-3">
-              <svg className="w-5 h-5 text-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-              </svg>
-              <span className="text-text-secondary">密碼管理</span>
-            </div>
-            <svg className="w-4 h-4 text-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </Link>
         </div>
       </div>
-
-      {/* 活動密碼 Modal */}
-      <PasswordModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        roleKey={`event_${selectedEvent}` as PasswordKey}
-        onSuccess={handleSuccess}
-        title="輸入活動密碼"
-      />
     </div>
   );
 }

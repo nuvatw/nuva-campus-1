@@ -5,7 +5,6 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import useSWR, { mutate } from 'swr';
 import { supabase } from '@/app/lib/supabase';
-import { AuthGuard } from '@/app/components/AuthGuard';
 import {
   Button,
   EmptyState,
@@ -117,7 +116,7 @@ const registrationColumns: ColumnDef<Registration>[] = [
   },
 ];
 
-function DashboardContent() {
+export default function DashboardPage() {
   const [expandedEvent, setExpandedEvent] = useState<string | null>(null);
   const [editingRegistration, setEditingRegistration] = useState<Registration | null>(null);
   const { showToast } = useToast();
@@ -303,10 +302,9 @@ function DashboardContent() {
         </div>
 
         {/* 快速操作 */}
-        <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="mt-8 grid grid-cols-2 md:grid-cols-3 gap-4">
           {[
             { href: '/guardian', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4', label: '活動執行' },
-            { href: '/guardian/passwords', icon: 'M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z', label: '密碼管理' },
             { href: '/ambassador', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z', label: '校園大使' },
             { href: '/nunu', icon: 'M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z', label: '努努專區' },
           ].map(({ href, icon, label }) => (
@@ -329,13 +327,5 @@ function DashboardContent() {
         />
       )}
     </div>
-  );
-}
-
-export default function DashboardPage() {
-  return (
-    <AuthGuard roleKey="guardian_admin" title="守護者總覽" redirectOnFail="/guardian">
-      <DashboardContent />
-    </AuthGuard>
   );
 }

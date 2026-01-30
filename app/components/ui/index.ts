@@ -9,7 +9,6 @@ export { LoadingSpinner } from './LoadingSpinner';
 // Input Components
 export { NumericKeypad } from './NumericKeypad';
 export { CodeInput } from './CodeInput';
-export { PinInput, PinDisplay } from './PinInput';
 
 // Data Display Components
 export { StatsCard, StatsGrid, MiniStat } from './StatsCard';
