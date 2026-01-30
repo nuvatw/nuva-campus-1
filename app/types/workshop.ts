@@ -1,3 +1,9 @@
+export interface ScheduleItem {
+  time: string;
+  title: string;
+  description: string;
+}
+
 export interface Workshop {
   id: string;
   title: string;
@@ -9,6 +15,7 @@ export interface Workshop {
   registrationUrl?: string;
   liveUrl?: string;
   tallyFormId?: string;
+  schedule?: ScheduleItem[];
 }
 
 export interface EventRegistration {

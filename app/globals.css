@@ -1,29 +1,348 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap');
+/* 字體透過 next/font 載入，不使用 @import */
+/* 見 app/fonts.ts 和 app/layout.tsx */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* =============================================
+   CSS 變數 - 日系簡約高級感
+   ============================================= */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* 主色調 */
+  --color-primary: #4A5568;
+  --color-primary-light: #718096;
+  --color-primary-dark: #2D3748;
+
+  /* 強調色 - 更明亮的金黃色 */
+  --color-accent: #F59E0B;
+  --color-accent-light: #FBBF24;
+
+  /* 背景色 */
+  --color-bg-primary: #FAFAF9;
+  --color-bg-secondary: #F7F5F3;
+  --color-bg-card: #FFFFFF;
+
+  /* 文字色 */
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #6B7280;
+  --color-text-muted: #9CA3AF;
+
+  /* 狀態色 */
+  --color-success: #48BB78;
+  --color-success-light: #C6F6D5;
+  --color-warning: #ED8936;
+  --color-warning-light: #FEEBC8;
+  --color-error: #E53E3E;
+  --color-error-light: #FED7D7;
+  --color-info: #4299E1;
+  --color-info-light: #BEE3F8;
+
+  /* 邊框 */
+  --color-border: #E5E7EB;
+  --color-border-light: #F3F4F6;
+
+  /* 陰影 */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.02);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.04), 0 4px 6px rgba(0, 0, 0, 0.02);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.04), 0 8px 10px rgba(0, 0, 0, 0.02);
+  --shadow-hover: 0 8px 16px rgba(0, 0, 0, 0.06);
+
+  /* Focus ring */
+  --focus-ring: 0 0 0 3px rgba(74, 85, 104, 0.2);
+  --focus-ring-primary: 0 0 0 3px rgba(74, 85, 104, 0.3);
+  --focus-ring-error: 0 0 0 3px rgba(229, 62, 62, 0.2);
+
+  /* 動畫時長 */
+  --duration-instant: 0ms;
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+
+  /* 動畫曲線 */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* =============================================
+   基礎樣式
+   ============================================= */
+* {
+  /* 使用 CSS 變數，由 next/font 自動注入 */
+  font-family: var(--font-noto-sans-tc), var(--font-noto-sans-jp), var(--font-inter), system-ui, -apple-system, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }
 
-* {
-  font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+body {
+  color: var(--color-text-primary);
+  background: var(--color-bg-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
+/* 防止 iOS 輸入框自動縮放 */
+input, textarea, select {
+  font-size: 16px;
 }
+
+/* 禁用雙擊縮放 */
+button, a {
+  touch-action: manipulation;
+}
+
+/* =============================================
+   無障礙：螢幕閱讀器專用
+   ============================================= */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.not-sr-only {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* =============================================
+   無障礙：焦點樣式
+   ============================================= */
+/* 移除預設 outline，使用自定義 focus-visible */
+*:focus {
+  outline: none;
+}
+
+/* 只在鍵盤導航時顯示焦點環 */
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* 按鈕和連結的焦點樣式 */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring-primary);
+}
+
+/* 輸入框焦點樣式 */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: var(--focus-ring);
+}
+
+/* =============================================
+   組件樣式
+   ============================================= */
+@layer components {
+  /* 日系按鈕 */
+  .btn-primary {
+    @apply bg-primary text-white px-6 py-3 rounded-lg font-medium
+           tracking-wide transition-all duration-200
+           focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:outline-none;
+  }
+
+  .btn-primary:hover {
+    @apply bg-primary-dark -translate-y-0.5;
+    box-shadow: var(--shadow-hover);
+  }
+
+  .btn-primary:active {
+    @apply translate-y-0 scale-[0.98];
+  }
+
+  .btn-primary:disabled {
+    @apply opacity-50 cursor-not-allowed translate-y-0;
+    box-shadow: none;
+  }
+
+  .btn-secondary {
+    @apply bg-transparent text-primary border border-border
+           px-6 py-3 rounded-lg font-medium transition-all duration-200
+           focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:outline-none;
+  }
+
+  .btn-secondary:hover {
+    @apply border-primary bg-bg-secondary;
+  }
+
+  .btn-secondary:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-text-secondary px-4 py-2
+           rounded-lg transition-all duration-200
+           focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:outline-none;
+  }
+
+  .btn-ghost:hover {
+    @apply bg-bg-secondary text-text-primary;
+  }
+
+  .btn-danger {
+    @apply bg-error text-white px-6 py-3 rounded-lg font-medium
+           transition-all duration-200
+           focus-visible:ring-2 focus-visible:ring-error/30 focus-visible:outline-none;
+  }
+
+  .btn-danger:hover {
+    @apply bg-error/90;
+  }
+
+  /* 日系卡片 */
+  .card {
+    @apply bg-bg-card border border-border-light rounded-xl p-6
+           transition-all duration-300;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .card:hover {
+    @apply -translate-y-0.5;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .card-interactive {
+    @apply card cursor-pointer
+           focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:outline-none;
+  }
+
+  /* 日系輸入框 */
+  .input {
+    @apply bg-bg-primary border border-border rounded-lg px-4 py-3
+           text-base transition-all duration-200;
+  }
+
+  .input:focus {
+    @apply outline-none border-primary;
+    box-shadow: var(--focus-ring);
+  }
+
+  .input::placeholder {
+    @apply text-text-muted;
+  }
+
+  .input:disabled {
+    @apply opacity-50 cursor-not-allowed bg-bg-secondary;
+  }
+
+  .input-error {
+    @apply input border-error;
+  }
+
+  .input-error:focus {
+    @apply border-error;
+    box-shadow: var(--focus-ring-error);
+  }
+
+  /* 標籤 */
+  .tag {
+    @apply inline-flex items-center px-3 py-1 bg-bg-secondary
+           rounded-full text-sm text-text-secondary;
+  }
+
+  .tag-primary {
+    @apply tag bg-primary/10 text-primary;
+  }
+
+  .tag-success {
+    @apply tag bg-success-light text-success;
+  }
+
+  .tag-warning {
+    @apply tag bg-warning-light text-warning;
+  }
+
+  .tag-error {
+    @apply tag bg-error-light text-error;
+  }
+
+  /* 分隔線 */
+  .divider {
+    @apply h-px bg-border-light my-8;
+  }
+}
+
+/* =============================================
+   動畫工具類
+   ============================================= */
+@layer utilities {
+  /* Stagger 延遲 */
+  .stagger-1 { animation-delay: 0.1s; }
+  .stagger-2 { animation-delay: 0.2s; }
+  .stagger-3 { animation-delay: 0.3s; }
+  .stagger-4 { animation-delay: 0.4s; }
+  .stagger-5 { animation-delay: 0.5s; }
+
+  /* 初始隱藏（用於動畫） */
+  .animate-initial {
+    opacity: 0;
+  }
+
+  /* Safe area */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-area-right {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* 觸控目標最小尺寸 (WCAG 2.5.5) */
+  .touch-target {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* 隱藏滾動條 */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* =============================================
+   自定義動畫 Keyframes
+   ============================================= */
 
 /* 任務發光動畫 */
 @keyframes glow-pulse {
@@ -35,4 +354,429 @@ body {
     opacity: 0.8;
     transform: scale(1.1);
   }
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* 勾選動畫 */
+.animate-draw-check {
+  stroke-dasharray: 50;
+  stroke-dashoffset: 50;
+  animation: drawCheck 0.5s ease-out forwards;
+}
+
+@keyframes drawCheck {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* 搖晃動畫 */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* 淡入動畫 */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+/* 淡入上移動畫 */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.4s ease-out forwards;
+}
+
+/* 彈入動畫 */
+@keyframes bounce-in {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.4s ease-out forwards;
+}
+
+/* 縮放彈跳 */
+@keyframes scale-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.animate-scale-bounce {
+  animation: scale-bounce 0.2s ease-out;
+}
+
+/* 滑入動畫 */
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s ease-out forwards;
+}
+
+/* =============================================
+   Reduced Motion 支援
+   ============================================= */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* 保留必要的視覺反饋 */
+  *:focus-visible {
+    transition-duration: 150ms !important;
+  }
+
+  /* 禁用所有自定義動畫類 */
+  .animate-fade-in,
+  .animate-fade-in-up,
+  .animate-bounce-in,
+  .animate-shake,
+  .animate-glow-pulse,
+  .animate-scale-bounce,
+  .animate-slide-in-right {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* =============================================
+   數字鍵盤專用樣式
+   ============================================= */
+.keypad-btn {
+  @apply flex items-center justify-center
+         w-[72px] h-14 rounded-xl
+         bg-bg-card border border-border-light
+         text-xl font-medium text-text-primary
+         transition-all duration-150 touch-target
+         focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:outline-none;
+}
+
+.keypad-btn:hover:not(:disabled) {
+  @apply bg-bg-secondary;
+}
+
+.keypad-btn:active:not(:disabled) {
+  @apply scale-95 bg-bg-secondary;
+}
+
+.keypad-btn:disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+@media (min-width: 768px) {
+  .keypad-btn {
+    @apply w-20 h-16 text-2xl;
+  }
+}
+
+/* =============================================
+   報到編號輸入框
+   ============================================= */
+.code-digit {
+  @apply w-14 h-16 rounded-lg border-2 border-border
+         text-2xl font-semibold text-center text-text-primary
+         bg-bg-card transition-all duration-200;
+}
+
+.code-digit:focus {
+  @apply border-primary outline-none;
+  box-shadow: var(--focus-ring);
+}
+
+.code-digit.filled {
+  @apply border-primary bg-bg-secondary;
+}
+
+.code-digit.error {
+  @apply border-error;
+}
+
+@media (min-width: 768px) {
+  .code-digit {
+    @apply w-16 h-18 text-3xl;
+  }
+}
+
+/* =============================================
+   Toast 通知樣式
+   ============================================= */
+.toast {
+  @apply fixed z-[100] px-4 py-3 rounded-lg shadow-lg
+         flex items-center gap-3 text-sm font-medium
+         animate-slide-in-right;
+}
+
+.toast-success {
+  @apply toast bg-success text-white;
+}
+
+.toast-error {
+  @apply toast bg-error text-white;
+}
+
+.toast-warning {
+  @apply toast bg-warning text-white;
+}
+
+.toast-info {
+  @apply toast bg-info text-white;
+}
+
+/* =============================================
+   高對比模式支援
+   ============================================= */
+@media (prefers-contrast: high) {
+  :root {
+    --color-primary: #2D3748;
+    --color-border: #1A1A1A;
+    --color-text-secondary: #4A5568;
+  }
+
+  .card {
+    border-width: 2px;
+  }
+
+  button, a {
+    text-decoration: underline;
+  }
+}
+
+/* =============================================
+   列印樣式
+   ============================================= */
+@media print {
+  * {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+
+  nav, footer, .no-print {
+    display: none !important;
+  }
+}
+
+/* =============================================
+   3D 翻牌動畫
+   ============================================= */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* 漂浮動畫 */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* 輕柔漂浮動畫 */
+@keyframes float-gentle {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-float-gentle {
+  animation: float-gentle 3s ease-in-out infinite;
+}
+
+/* 無限向左滾動 - 緩慢優雅 */
+@keyframes scroll-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-scroll-left {
+  animation: scroll-left 160s linear infinite;
+}
+
+/* 無限向右滾動 - 緩慢優雅 */
+@keyframes scroll-right {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+.animate-scroll-right {
+  animation: scroll-right 160s linear infinite;
+}
+
+/* 暫停滾動動畫（hover 時） */
+.animate-scroll-left:hover,
+.animate-scroll-right:hover {
+  animation-play-state: paused;
+}
+
+/* 卡片飛入應援牆動畫 */
+@keyframes fly-to-wall {
+  0% {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  50% {
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.3);
+    opacity: 0;
+  }
+}
+
+.animate-fly-to-wall {
+  animation: fly-to-wall 1.5s ease-in-out forwards;
+}
+
+/* 粒子爆發動畫 */
+@keyframes particle-burst {
+  0% {
+    transform: translate(-50%, -50%) rotate(var(--particle-angle, 0deg)) translateX(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(var(--particle-angle, 0deg)) translateX(150px) scale(0);
+    opacity: 0;
+  }
+}
+
+.animate-particle-burst {
+  animation: particle-burst 1s ease-out forwards;
+}
+
+/* 成功彈出動畫 */
+@keyframes success-pop {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-success-pop {
+  animation: success-pop 0.5s ease-out forwards;
+}
+
+/* 按鈕發光脈衝 */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.02); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* 按鈕輕微移動 */
+@keyframes button-glow-error {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(229, 62, 62, 0.3);
+    transform: translateY(0);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(229, 62, 62, 0.5);
+    transform: translateY(-2px);
+  }
+}
+
+.animate-button-glow-error {
+  animation: button-glow-error 2s ease-in-out infinite;
+}
+
+@keyframes button-glow-accent {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+    transform: translateY(0);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(245, 158, 11, 0.6);
+    transform: translateY(-2px);
+  }
+}
+
+.animate-button-glow-accent {
+  animation: button-glow-accent 2s ease-in-out infinite;
+  animation-delay: 0.5s;
+}
+
+/* 手揮動動畫 */
+@keyframes wave {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(15deg); }
+  75% { transform: rotate(-15deg); }
+}
+
+.animate-wave {
+  animation: wave 1s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+/* 愛心跳動動畫 */
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  15% { transform: scale(1.15); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.1); }
+  60% { transform: scale(1); }
+}
+
+.animate-heartbeat {
+  animation: heartbeat 1.5s ease-in-out infinite;
 }

@@ -47,7 +47,7 @@ export default function MissionItem({ id, status }: MissionItemProps) {
 
   if (status === 'ongoing') {
     return (
-      <Link href={`/missions/${id}`}>
+      <Link href={`/ambassador/missions/${id}`}>
         {content}
       </Link>
     );

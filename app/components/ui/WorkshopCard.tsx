@@ -20,7 +20,7 @@ export default function WorkshopCard({ workshop }: WorkshopCardProps) {
 
   return (
     <Link
-      href={`/workshops/${workshop.id}`}
+      href={`/ambassador/workshops/${workshop.id}`}
       className={`
         block bg-white rounded-2xl p-6 border-2 transition-all duration-300
         hover:shadow-lg hover:-translate-y-1
