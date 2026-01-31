@@ -12,6 +12,7 @@ export const workshops: Workshop[] = [
     locationUrl: 'https://maps.app.goo.gl/jyRl4ahqVVZdlg2iR',
     description: '學習說故事的技巧，成為溝通高手',
     tallyFormId: '9qBWK4',
+    youtubeVideoId: 'iAfrQb6S9XY',
     schedule: [
       { time: '09:30–10:00', title: '開場＆分組', description: '目標說明、分組、暖身規則' },
       { time: '10:00–10:50', title: '資訊缺口 Hooks', description: '設計缺口，製造「我在乎」' },

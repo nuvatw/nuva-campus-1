@@ -18,6 +18,7 @@ export interface Workshop {
   liveUrl?: string;
   tallyFormId?: string;
   schedule?: ScheduleItem[];
+  youtubeVideoId?: string;
 }
 
 export interface EventRegistration {

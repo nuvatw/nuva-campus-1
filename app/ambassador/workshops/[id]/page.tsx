@@ -9,6 +9,7 @@ import { supabase } from '@/app/lib/supabase';
 import { workshops } from '@/app/data/workshops';
 import { Ambassador } from '@/app/types/ambassador';
 import { EventRegistration } from '@/app/types/workshop';
+import YouTubeEmbed from '@/app/components/ui/YouTubeEmbed';
 
 export default function WorkshopDetailPage() {
   const params = useParams();
@@ -124,6 +125,11 @@ export default function WorkshopDetailPage() {
 
       <div className="max-w-5xl mx-auto px-4 sm:px-8 py-6 sm:py-8">
         <div className="space-y-6">
+          {/* YouTube 影片回放 */}
+          {workshop.youtubeVideoId && (
+            <YouTubeEmbed videoId={workshop.youtubeVideoId} title={workshop.title} />
+          )}
+
           {/* 工作坊資訊 + 圓餅圖 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100">
