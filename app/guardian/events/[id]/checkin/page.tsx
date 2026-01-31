@@ -93,9 +93,9 @@ export default function CheckinPage() {
     .filter(p => p.member_type !== 'ambassador' && p.member_type !== 'nunu')
     .sort((a, b) => a.participant_name.localeCompare(b.participant_name, 'zh-TW'));
 
-  // 統計
-  const totalCount = (participants || []).length;
-  const checkedInCount = (participants || []).filter(p => p.attended).length;
+  // 統計（只計算努努和校園大使）
+  const totalCount = nunus.length + ambassadors.length;
+  const checkedInCount = [...nunus, ...ambassadors].filter(p => p.attended).length;
 
   // 過濾
   const filterParticipants = (list: Participant[]) => {

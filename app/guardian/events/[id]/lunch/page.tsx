@@ -95,9 +95,9 @@ export default function LunchPage() {
     .filter(p => p.member_type !== 'ambassador' && p.member_type !== 'nunu')
     .sort((a, b) => a.participant_name.localeCompare(b.participant_name, 'zh-TW'));
 
-  // 統計
-  const totalCount = (participants || []).length;
-  const collectedCount = (participants || []).filter(p => p.lunch_collected).length;
+  // 統計（只計算努努和校園大使）
+  const totalCount = nunus.length + ambassadors.length;
+  const collectedCount = [...nunus, ...ambassadors].filter(p => p.lunch_collected).length;
 
   // 過濾
   const filterParticipants = (list: Participant[]) => {
