@@ -1,10 +1,12 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { OptimizedImage } from './components/ui';
 import { IdentityCard } from './components/ui/IdentityCard';
+import { PasswordModal } from './components/ui/PasswordModal';
 import { GuardianIcon, NunuIcon, FafaIcon, AmbassadorIcon, BardIcon } from './components/icons/RoleIcons';
+import { useAuth } from './hooks/useAuth';
 
 type Role = 'guardian' | 'nunu' | 'fafa' | 'ambassador' | 'bard';
 
@@ -15,24 +17,54 @@ interface RoleConfig {
   icon: ReactNode;
   path: string;
   isLocked?: boolean;
+  requiresPassword?: boolean;
 }
 
 const roles: RoleConfig[] = [
-  { key: 'guardian', title: '守護者', subtitle: '執行團隊', icon: <GuardianIcon />, path: '/guardian' },
-  { key: 'nunu', title: '努努', subtitle: '活動志工', icon: <NunuIcon />, path: '/nunu' },
-  { key: 'fafa', title: '法法', subtitle: '活動參與者', icon: <FafaIcon />, path: '/fafa', isLocked: true },
-  { key: 'ambassador', title: '校園大使', subtitle: '新世代力量', icon: <AmbassadorIcon />, path: '/ambassador' },
-  { key: 'bard', title: '吟遊詩人', subtitle: '我也不知道我是誰', icon: <BardIcon />, path: '/recruit' },
+  { key: 'guardian', title: '守護者', subtitle: '執行團隊', icon: <GuardianIcon />, path: '/guardian', requiresPassword: true },
+  { key: 'nunu', title: '努努', subtitle: '活動志工', icon: <NunuIcon />, path: '/nunu', requiresPassword: true },
+  { key: 'fafa', title: '法法', subtitle: '活動參與者', icon: <FafaIcon />, path: '/fafa', requiresPassword: true },
+  { key: 'ambassador', title: '校園大使', subtitle: '新世代力量', icon: <AmbassadorIcon />, path: '/ambassador', requiresPassword: true },
+  { key: 'bard', title: '吟遊詩人', subtitle: '我也不知道我是誰', icon: <BardIcon />, path: '/recruit', requiresPassword: false },
 ];
 
 export default function Home() {
   const router = useRouter();
+  const { isVerified } = useAuth();
+  const [passwordModal, setPasswordModal] = useState<{
+    isOpen: boolean;
+    role: RoleConfig | null;
+  }>({ isOpen: false, role: null });
 
   const handleRoleClick = (role: RoleConfig) => {
     if (role.isLocked) {
       return;
     }
-    router.push(role.path);
+
+    // Bard doesn't need password
+    if (!role.requiresPassword) {
+      router.push(role.path);
+      return;
+    }
+
+    // Check if already verified
+    if (isVerified(role.key)) {
+      router.push(role.path);
+      return;
+    }
+
+    // Show password modal
+    setPasswordModal({ isOpen: true, role });
+  };
+
+  const handlePasswordSuccess = () => {
+    if (passwordModal.role) {
+      router.push(passwordModal.role.path);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setPasswordModal({ isOpen: false, role: null });
   };
 
   return (
@@ -79,6 +111,17 @@ export default function Home() {
       >
         <span className="tracking-widest">NUVA</span>
       </div>
+
+      {/* Password Modal */}
+      {passwordModal.role && (
+        <PasswordModal
+          isOpen={passwordModal.isOpen}
+          onClose={handleCloseModal}
+          roleKey={passwordModal.role.key}
+          roleTitle={passwordModal.role.title}
+          onSuccess={handlePasswordSuccess}
+        />
+      )}
     </main>
   );
 }

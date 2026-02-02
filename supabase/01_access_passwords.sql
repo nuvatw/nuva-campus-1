@@ -23,6 +23,7 @@ CREATE POLICY "Allow public read" ON access_passwords
 INSERT INTO access_passwords (key, password, description) VALUES
   ('guardian', '0001', '守護者專區入口密碼'),
   ('nunu', '0002', '努努專區入口密碼'),
+  ('fafa', '0003', '法法專區入口密碼'),
   ('ambassador', '0004', '校園大使專區入口密碼'),
   ('guardian_admin', '0812', '守護者密碼管理區域密碼'),
   ('event_ws02', '0202', 'WS02 活動執行密碼')

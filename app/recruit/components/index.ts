@@ -8,6 +8,7 @@ export { Footer } from './Footer';
 export { ActionButtons } from './ActionButtons';
 export { UniversityCard } from './UniversityCard';
 export { SupportForm } from './SupportForm';
+export { SupportFormModal } from './SupportFormModal';
 export { Leaderboard } from './Leaderboard';
 export { ActivityInfo } from './ActivityInfo';
 

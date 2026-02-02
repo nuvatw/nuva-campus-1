@@ -394,20 +394,21 @@ select:focus-visible {
   animation: fade-in 0.3s ease-out forwards;
 }
 
-/* 淡入上移動畫 */
+/* 淡入上移動畫 - GPU 加速 */
 @keyframes fade-in-up {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translate3d(0, 16px, 0);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 .animate-fade-in-up {
   animation: fade-in-up 0.4s ease-out forwards;
+  will-change: transform, opacity;
 }
 
 /* 彈入動畫 */
@@ -615,50 +616,61 @@ select:focus-visible {
   transform: rotateY(180deg);
 }
 
-/* 漂浮動畫 */
+/* 漂浮動畫 - GPU 加速 */
 @keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-15px); }
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -15px, 0); }
 }
 
 .animate-float {
   animation: float 3s ease-in-out infinite;
+  will-change: transform;
 }
 
-/* 輕柔漂浮動畫 */
+/* 輕柔漂浮動畫 - GPU 加速 */
 @keyframes float-gentle {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -8px, 0); }
 }
 
 .animate-float-gentle {
   animation: float-gentle 3s ease-in-out infinite;
+  will-change: transform;
 }
 
-/* 無限向左滾動 - 緩慢優雅 */
-@keyframes scroll-left {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+/* 無限向左滾動 - GPU 加速 */
+@keyframes marquee-left {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
 }
 
-.animate-scroll-left {
-  animation: scroll-left 160s linear infinite;
+.animate-marquee-left {
+  animation: marquee-left 80s linear infinite;
 }
 
-/* 無限向右滾動 - 緩慢優雅 */
-@keyframes scroll-right {
-  0% { transform: translateX(-50%); }
-  100% { transform: translateX(0); }
+/* 無限向右滾動 - GPU 加速 */
+@keyframes marquee-right {
+  0% { transform: translate3d(-50%, 0, 0); }
+  100% { transform: translate3d(0, 0, 0); }
 }
 
-.animate-scroll-right {
-  animation: scroll-right 160s linear infinite;
+.animate-marquee-right {
+  animation: marquee-right 80s linear infinite;
 }
 
 /* 暫停滾動動畫（hover 時） */
-.animate-scroll-left:hover,
-.animate-scroll-right:hover {
+.animate-marquee-left:hover,
+.animate-marquee-right:hover {
   animation-play-state: paused;
+}
+
+/* 保留舊的 class 名稱兼容 */
+.animate-scroll-left {
+  animation: marquee-left 80s linear infinite;
+}
+
+.animate-scroll-right {
+  animation: marquee-right 80s linear infinite;
 }
 
 /* 卡片飛入應援牆動畫 */
@@ -714,69 +726,57 @@ select:focus-visible {
   animation: success-pop 0.5s ease-out forwards;
 }
 
-/* 按鈕發光脈衝 */
+/* 按鈕發光脈衝 - 簡化版 */
 @keyframes pulse-glow {
-  0%, 100% { opacity: 0.3; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.02); }
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.5; }
 }
 
 .animate-pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
+  animation: pulse-glow 2.5s ease-in-out infinite;
 }
 
-/* 按鈕輕微移動 */
+/* 按鈕輕微移動 - 使用 GPU 加速 */
 @keyframes button-glow-error {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(229, 62, 62, 0.3);
-    transform: translateY(0);
-  }
-  50% {
-    box-shadow: 0 0 30px rgba(229, 62, 62, 0.5);
-    transform: translateY(-2px);
-  }
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -2px, 0); }
 }
 
 .animate-button-glow-error {
-  animation: button-glow-error 2s ease-in-out infinite;
+  animation: button-glow-error 2.5s ease-in-out infinite;
+  will-change: transform;
 }
 
 @keyframes button-glow-accent {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
-    transform: translateY(0);
-  }
-  50% {
-    box-shadow: 0 0 35px rgba(245, 158, 11, 0.6);
-    transform: translateY(-2px);
-  }
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -2px, 0); }
 }
 
 .animate-button-glow-accent {
-  animation: button-glow-accent 2s ease-in-out infinite;
+  animation: button-glow-accent 2.5s ease-in-out infinite;
   animation-delay: 0.5s;
+  will-change: transform;
 }
 
-/* 手揮動動畫 */
+/* 手揮動動畫 - 簡化 */
 @keyframes wave {
   0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(15deg); }
-  75% { transform: rotate(-15deg); }
+  50% { transform: rotate(12deg); }
 }
 
 .animate-wave {
-  animation: wave 1s ease-in-out infinite;
+  animation: wave 1.2s ease-in-out infinite;
   transform-origin: bottom center;
+  will-change: transform;
 }
 
-/* 愛心跳動動畫 */
+/* 愛心跳動動畫 - 簡化 */
 @keyframes heartbeat {
   0%, 100% { transform: scale(1); }
-  15% { transform: scale(1.15); }
-  30% { transform: scale(1); }
-  45% { transform: scale(1.1); }
-  60% { transform: scale(1); }
+  50% { transform: scale(1.1); }
 }
 
 .animate-heartbeat {
   animation: heartbeat 1.5s ease-in-out infinite;
+  will-change: transform;
 }

@@ -25,9 +25,10 @@ function SupporterCardComponent({
     <button
       onClick={onClick}
       className={`
-        text-left bg-bg-card/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg border
-        transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer
-        ${isHelp ? 'border-error/30 hover:border-error/50' : 'border-accent/30 hover:border-accent/50'}
+        text-left bg-bg-card rounded-2xl p-4 shadow-md border
+        transition-transform duration-200 ease-out
+        hover:scale-[1.02] active:scale-[0.98]
+        ${isHelp ? 'border-error/20' : 'border-accent/20'}
         ${className}
       `}
       style={style}
@@ -35,7 +36,7 @@ function SupporterCardComponent({
       <div className="flex items-start gap-3">
         <div className={`
           w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0
-          ${isHelp ? 'bg-gradient-to-br from-error to-red-700' : 'bg-gradient-to-br from-accent to-amber-600'}
+          ${isHelp ? 'bg-error' : 'bg-accent'}
         `}>
           {supporter.supporter_name.charAt(0)}
         </div>

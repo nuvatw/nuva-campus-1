@@ -42,7 +42,7 @@ function ActivityInfoComponent() {
           </div>
           <div>
             <p className="font-medium text-text-primary">活動內容</p>
-            <p className="text-sm text-text-muted">創業分享、互動工作坊</p>
+            <p className="text-sm text-text-muted">AI 職場應用、AI 素養</p>
           </div>
         </div>
       </div>
