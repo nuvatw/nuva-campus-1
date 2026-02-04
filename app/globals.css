@@ -645,7 +645,7 @@ select:focus-visible {
 }
 
 .animate-marquee-left {
-  animation: marquee-left 80s linear infinite;
+  animation: marquee-left 320s linear infinite;
 }
 
 /* 無限向右滾動 - GPU 加速 */
@@ -655,7 +655,7 @@ select:focus-visible {
 }
 
 .animate-marquee-right {
-  animation: marquee-right 80s linear infinite;
+  animation: marquee-right 320s linear infinite;
 }
 
 /* 暫停滾動動畫（hover 時） */
@@ -666,11 +666,11 @@ select:focus-visible {
 
 /* 保留舊的 class 名稱兼容 */
 .animate-scroll-left {
-  animation: marquee-left 80s linear infinite;
+  animation: marquee-left 320s linear infinite;
 }
 
 .animate-scroll-right {
-  animation: marquee-right 80s linear infinite;
+  animation: marquee-right 320s linear infinite;
 }
 
 /* 卡片飛入應援牆動畫 */

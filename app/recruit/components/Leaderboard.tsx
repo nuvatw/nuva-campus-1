@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useState } from 'react';
+import { memo, useState, useEffect } from 'react';
 import type { SupportStats } from '../types';
 
 interface LeaderboardProps {
@@ -10,10 +10,22 @@ interface LeaderboardProps {
 interface FlipCardProps {
   stat: SupportStats;
   rank: number;
+  isTop3?: boolean;
 }
 
-function FlipCard({ stat, rank }: FlipCardProps) {
+function FlipCard({ stat, rank, isTop3 = false }: FlipCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
+
+  // 5 秒後自動翻回
+  useEffect(() => {
+    if (!isFlipped) return;
+
+    const timer = setTimeout(() => {
+      setIsFlipped(false);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [isFlipped]);
 
   const getRankStyle = () => {
     if (rank === 1) return 'from-amber-400 to-amber-600';
@@ -22,36 +34,45 @@ function FlipCard({ stat, rank }: FlipCardProps) {
     return 'from-primary-light to-primary';
   };
 
+  // 橫向 2:1 比例 (寬:高) - 使用 inline style 確保尺寸
+  const cardStyle = isTop3
+    ? { width: 280, height: 140 }
+    : { width: 160, height: 80 };
+
+  const rankTextClass = isTop3 ? 'text-3xl md:text-4xl' : 'text-xl md:text-2xl';
+  const supporterTextClass = isTop3 ? 'text-sm' : 'text-[10px]';
+  const universityTextClass = isTop3 ? 'text-base md:text-lg' : 'text-xs md:text-sm';
+  const cityTextClass = isTop3 ? 'text-xs' : 'text-[10px]';
+
   return (
     <div
       className="perspective-1000 cursor-pointer"
       onClick={() => setIsFlipped(!isFlipped)}
     >
       <div
-        className={`relative w-20 h-24 md:w-24 md:h-28 transition-transform duration-500 transform-style-3d ${
+        className={`relative transition-transform duration-500 transform-style-3d ${
           isFlipped ? 'rotate-y-180' : ''
         }`}
+        style={cardStyle}
       >
         {/* 正面 - 名次 */}
         <div
           className={`absolute inset-0 backface-hidden rounded-xl bg-gradient-to-br ${getRankStyle()}
-            flex flex-col items-center justify-center text-white shadow-lg`}
+            flex items-center justify-center gap-2 text-white shadow-lg px-4`}
         >
-          <span className="text-3xl md:text-4xl font-bold">{rank}</span>
-          <span className="text-xs opacity-80 mt-1">{stat.total_supporters} 人</span>
+          <span className={`${rankTextClass} font-bold`}>{rank}</span>
+          <span className={`${supporterTextClass} opacity-80`}>{stat.total_supporters} 人</span>
         </div>
 
         {/* 背面 - 大學 */}
         <div
           className="absolute inset-0 backface-hidden rotate-y-180 rounded-xl bg-bg-card border border-border-light
-            flex flex-col items-center justify-center p-2 shadow-lg"
+            flex items-center justify-center gap-2 px-3 shadow-lg"
         >
-          <span className="text-xs md:text-sm font-medium text-text-primary text-center leading-tight">
-            {stat.university_name.length > 8
-              ? stat.university_name.replace('國立', '').replace('大學', '')
-              : stat.university_name}
+          <span className={`${universityTextClass} font-medium text-text-primary whitespace-nowrap`}>
+            {stat.university_name}
           </span>
-          <span className="text-[10px] text-text-muted mt-1">{stat.city}</span>
+          <span className={`${cityTextClass} text-text-muted whitespace-nowrap`}>{stat.city}</span>
         </div>
       </div>
     </div>
@@ -59,9 +80,10 @@ function FlipCard({ stat, rank }: FlipCardProps) {
 }
 
 function LeaderboardComponent({ stats }: LeaderboardProps) {
-  const top10 = stats.slice(0, 10);
+  const top3 = stats.slice(0, 3);
+  const rest = stats.slice(3, 10);
 
-  if (top10.length === 0) {
+  if (stats.length === 0) {
     return (
       <div className="text-center py-8">
         <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-accent/10 flex items-center justify-center">
@@ -77,12 +99,21 @@ function LeaderboardComponent({ stats }: LeaderboardProps) {
 
   return (
     <div>
-      {/* 翻牌卡片 */}
-      <div className="flex flex-wrap justify-center gap-3 md:gap-4">
-        {top10.map((stat, index) => (
-          <FlipCard key={stat.university_id} stat={stat} rank={index + 1} />
+      {/* Top 3 - 較大的卡片 */}
+      <div className="flex justify-center gap-4 md:gap-6 mb-6">
+        {top3.map((stat, index) => (
+          <FlipCard key={stat.university_id} stat={stat} rank={index + 1} isTop3 />
         ))}
       </div>
+
+      {/* 4-10 名 - 較小的卡片 */}
+      {rest.length > 0 && (
+        <div className="flex flex-wrap justify-center gap-3 md:gap-4">
+          {rest.map((stat, index) => (
+            <FlipCard key={stat.university_id} stat={stat} rank={index + 4} />
+          ))}
+        </div>
+      )}
 
       <p className="text-center text-xs text-text-muted mt-6">
         點擊卡片查看學校名稱

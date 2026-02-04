@@ -137,7 +137,9 @@ export default function RecruitPage() {
       )}
 
       {/* Main Content */}
-      <div className="min-h-screen bg-bg-primary">
+      <div className={`min-h-screen bg-bg-primary transition-opacity duration-300 ${
+        !isLoadingComplete ? 'opacity-0' : 'opacity-100'
+      }`}>
         <FixedHeader />
         <HeroSection />
         <StatsSection />
