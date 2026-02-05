@@ -99,8 +99,8 @@ function LeaderboardComponent({ stats }: LeaderboardProps) {
 
   return (
     <div>
-      {/* Top 3 - 較大的卡片 */}
-      <div className="flex justify-center gap-4 md:gap-6 mb-6">
+      {/* Top 3 - 較大的卡片，手機垂直排列 */}
+      <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 mb-6">
         {top3.map((stat, index) => (
           <FlipCard key={stat.university_id} stat={stat} rank={index + 1} isTop3 />
         ))}
