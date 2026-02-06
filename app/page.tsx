@@ -24,7 +24,7 @@ const roles: RoleConfig[] = [
   { key: 'guardian', title: '守護者', subtitle: '執行團隊', icon: <GuardianIcon />, path: '/guardian', requiresPassword: true },
   { key: 'nunu', title: '努努', subtitle: '活動志工', icon: <NunuIcon />, path: '/nunu', requiresPassword: true },
   { key: 'fafa', title: '法法', subtitle: '活動參與者', icon: <FafaIcon />, path: '/fafa', requiresPassword: true },
-  { key: 'ambassador', title: '校園大使', subtitle: '新世代力量', icon: <AmbassadorIcon />, path: '/ambassador', requiresPassword: true },
+  { key: 'ambassador', title: '校園大使', subtitle: '新世代力量', icon: <AmbassadorIcon />, path: '/ambassador', requiresPassword: false },
   { key: 'bard', title: '吟遊詩人', subtitle: '我也不知道我是誰', icon: <BardIcon />, path: '/recruit', requiresPassword: false },
 ];
 
