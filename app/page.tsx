@@ -74,7 +74,7 @@ export default function Home() {
         <div className="flex justify-center mb-4">
           <OptimizedImage
             src="/nuva logo.png"
-            alt="NUVA 校園計劃"
+            alt="nuva 校園計劃"
             width={100}
             height={100}
             className="object-contain"
@@ -109,7 +109,7 @@ export default function Home() {
         className="mt-12 text-text-muted text-xs animate-fade-in-up animate-initial"
         style={{ animationDelay: '600ms', animationFillMode: 'forwards' }}
       >
-        <span className="tracking-widest">NUVA</span>
+        <span className="tracking-widest">nuva</span>
       </div>
 
       {/* Password Modal */}

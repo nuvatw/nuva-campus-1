@@ -4,8 +4,8 @@ import { Providers } from "@/app/components/Providers";
 import { fontVariables, primaryFont } from "./fonts";
 
 export const metadata: Metadata = {
-  title: "NUVA Campus",
-  description: "NUVA 校園計劃互動區",
+  title: "nuva Campus",
+  description: "nuva 校園計劃互動區",
   icons: {
     icon: "/favicon.png",
     apple: "/favicon.png",

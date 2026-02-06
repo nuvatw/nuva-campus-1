@@ -40,7 +40,7 @@ export function FixedHeader() {
           <span className="text-sm font-medium">返回首頁</span>
         </Link>
         <span className={`text-sm font-medium transition-colors ${showScrolledStyles ? 'text-text-primary' : 'text-white'}`}>
-          NUVA 校園計劃
+          nuva 校園計劃
         </span>
       </div>
     </header>

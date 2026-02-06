@@ -48,13 +48,13 @@ export async function POST(request: NextRequest) {
     if (type === 'test') {
       // 發送測試郵件
       const { error } = await getResend().emails.send({
-        from: 'NUVA Campus <noreply@meetnuva.com>',
+        from: 'nuva Campus <noreply@meetnuva.com>',
         to: to || 'ceo@meetnuva.com',
-        subject: `[測試] NUVA Campus 活動通知`,
+        subject: `[測試] nuva Campus 活動通知`,
         html: `
           <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
             <div style="text-align: center; margin-bottom: 32px;">
-              <h1 style="font-size: 24px; color: #1A1A1A; margin: 0;">NUVA Campus</h1>
+              <h1 style="font-size: 24px; color: #1A1A1A; margin: 0;">nuva Campus</h1>
             </div>
 
             <div style="background: #F7F5F3; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
             </div>
 
             <div style="text-align: center; color: #9CA3AF; font-size: 12px;">
-              <p>NUVA Campus</p>
+              <p>nuva Campus</p>
             </div>
           </div>
         `,
@@ -104,13 +104,13 @@ export async function POST(request: NextRequest) {
       for (const reg of registrations) {
         try {
           const { error: sendError } = await getResend().emails.send({
-            from: 'NUVA Campus <noreply@meetnuva.com>',
+            from: 'nuva Campus <noreply@meetnuva.com>',
             to: reg.participant_email,
-            subject: `NUVA Campus 活動報到資訊`,
+            subject: `nuva Campus 活動報到資訊`,
             html: `
               <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
                 <div style="text-align: center; margin-bottom: 32px;">
-                  <h1 style="font-size: 24px; color: #1A1A1A; margin: 0;">NUVA Campus</h1>
+                  <h1 style="font-size: 24px; color: #1A1A1A; margin: 0;">nuva Campus</h1>
                 </div>
 
                 <p style="color: #1A1A1A; font-size: 16px; margin-bottom: 24px;">
@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
                 </p>
 
                 <p style="color: #6B7280; margin-bottom: 24px; line-height: 1.6;">
-                  感謝您報名參加 NUVA Campus 活動，以下是您的報到資訊：
+                  感謝您報名參加 nuva Campus 活動，以下是您的報到資訊：
                 </p>
 
                 <div style="background: #F7F5F3; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
                 </p>
 
                 <div style="text-align: center; color: #9CA3AF; font-size: 12px; margin-top: 32px;">
-                  <p>NUVA Campus</p>
+                  <p>nuva Campus</p>
                 </div>
               </div>
             `,

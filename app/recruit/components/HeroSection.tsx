@@ -9,7 +9,7 @@ export function HeroSection() {
       <div className="absolute inset-0">
         <OptimizedImage
           src="/campus_tour.jpeg"
-          alt="NUVA 全國校園巡迴"
+          alt="nuva 全國校園巡迴"
           fill
           className="object-cover object-center"
           priority

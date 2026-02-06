@@ -8,7 +8,7 @@ export default function Loading() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-bg-primary">
       {/* 品牌文字 */}
       <div className="text-2xl font-bold text-text-primary tracking-widest mb-8 animate-pulse">
-        NUVA
+        nuva
       </div>
 
       {/* 載入動畫 - 三個跳動的點 */}

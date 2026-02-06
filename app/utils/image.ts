@@ -15,7 +15,7 @@ export const blurDataURLs: Record<string, string> = {
   // favicon.png - 網站圖標
   '/favicon.png': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFklEQVR42mN8//HLfwYiAOOoQvoqBABbWyZJf74GZgAAAABJRU5ErkJggg==',
 
-  // nuva logo.png - NUVA 標誌
+  // nuva logo.png - nuva 標誌
   '/nuva logo.png': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFklEQVR42mN8//HLfwYiAOOoQvoqBABbWyZJf74GZgAAAABJRU5ErkJggg==',
 };
 
