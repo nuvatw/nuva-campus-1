@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { NumericKeypad } from '@/app/components/ui/NumericKeypad';
-import { CodeInput } from '@/app/components/ui/CodeInput';
 
 const CORRECT_PASSWORD = '0801';
 const COOKIE_NAME = 'site_auth';
@@ -112,10 +111,21 @@ export default function SitePasswordGate({ children }: SitePasswordGateProps) {
         </div>
 
         <div className={`mb-6 ${isShaking ? 'animate-shake' : ''}`}>
-          <CodeInput
-            code={[...code.padEnd(4, ' ')].map(c => c === ' ' ? '' : c)}
-            error={!!error}
-          />
+          <div className="flex justify-center gap-4">
+            {[0, 1, 2, 3].map(i => (
+              <div
+                key={i}
+                className="w-14 flex flex-col items-center"
+              >
+                <span className={`text-2xl font-semibold h-10 flex items-center justify-center ${error ? 'text-error' : 'text-text-primary'}`}>
+                  {code[i] ? '\u2022' : ''}
+                </span>
+                <div className={`w-full h-0.5 rounded-full transition-colors duration-200 ${
+                  code[i] ? (error ? 'bg-error' : 'bg-primary') : 'bg-border'
+                }`} />
+              </div>
+            ))}
+          </div>
         </div>
 
         {error && (
