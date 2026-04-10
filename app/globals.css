@@ -1,0 +1,782 @@
+/* Font loaded via next/font — see app/fonts.ts and app/layout.tsx */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =============================================
+   CSS Variables — "Warm Precision" Design System
+   Teal primary + Amber accent + Warm Stone neutrals
+   ============================================= */
+:root {
+  /* Primary — Blue */
+  --color-primary: #3B82F6;
+  --color-primary-light: #93C5FD;
+  --color-primary-dark: #1D4ED8;
+  --color-primary-600: #2563EB;
+
+  /* Accent — Amber */
+  --color-accent: #F59E0B;
+  --color-accent-light: #FBBF24;
+
+  /* Background — Warm */
+  --color-bg-primary: #FAFAF9;
+  --color-bg-secondary: #F5F5F4;
+  --color-bg-card: #FFFFFF;
+
+  /* Text — Warm stone */
+  --color-text-primary: #1C1917;
+  --color-text-secondary: #57534E;
+  --color-text-muted: #918882;
+
+  /* Semantic status */
+  --color-success: #16A34A;
+  --color-success-light: #DCFCE7;
+  --color-warning: #CA8A04;
+  --color-warning-light: #FEF3C7;
+  --color-error: #DC2626;
+  --color-error-light: #FEE2E2;
+  --color-info: #2563EB;
+  --color-info-light: #EFF6FF;
+
+  /* Borders — Warm stone */
+  --color-border: #E7E5E4;
+  --color-border-light: #F5F5F4;
+
+  /* Shadow elevation system */
+  --shadow-elevation-1: 0 1px 3px rgba(28, 25, 23, 0.06);
+  --shadow-elevation-2: 0 4px 8px -2px rgba(28, 25, 23, 0.08);
+  --shadow-elevation-3: 0 8px 16px -4px rgba(28, 25, 23, 0.1);
+  --shadow-elevation-4: 0 16px 32px -8px rgba(28, 25, 23, 0.12);
+  --shadow-elevation-5: 0 24px 48px -12px rgba(28, 25, 23, 0.16);
+
+  /* Colored shadows */
+  --shadow-primary: 0 8px 24px -4px rgba(59, 130, 246, 0.2);
+  --shadow-secondary: 0 8px 24px -4px rgba(245, 158, 11, 0.2);
+  --shadow-success: 0 8px 24px -4px rgba(22, 163, 74, 0.2);
+
+  /* Compat shadow aliases (actively used in components) */
+  --shadow-sm: 0 1px 3px rgba(28, 25, 23, 0.06);
+  --shadow-md: 0 4px 8px -2px rgba(28, 25, 23, 0.08);
+  --shadow-lg: 0 8px 16px -4px rgba(28, 25, 23, 0.1);
+  --shadow-xl: 0 16px 32px -8px rgba(28, 25, 23, 0.12);
+
+  /* Focus ring — Blue */
+  --focus-ring: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  --focus-ring-primary: 0 0 0 3px rgba(59, 130, 246, 0.3);
+  --focus-ring-error: 0 0 0 3px rgba(220, 38, 38, 0.2);
+
+  /* Animation timing */
+  --duration-instant: 0ms;
+  --duration-micro: 100ms;
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-moderate: 400ms;
+  --duration-slow: 600ms;
+
+  /* Easing functions */
+  --ease-default: cubic-bezier(0.2, 0, 0, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* =============================================
+   Base Styles
+   ============================================= */
+* {
+  font-family: var(--font-dm-sans), var(--font-noto-sans-tc), var(--font-noto-sans-jp), var(--font-sora), system-ui, -apple-system, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  color: var(--color-text-primary);
+  background: var(--color-bg-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Prevent iOS input zoom */
+input, textarea, select {
+  font-size: 16px;
+}
+
+/* Disable double-tap zoom on interactive elements */
+button, a {
+  touch-action: manipulation;
+}
+
+/* =============================================
+   Accessibility: Screen Reader
+   ============================================= */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.not-sr-only {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* =============================================
+   Accessibility: Focus Styles
+   ============================================= */
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring-primary);
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: var(--focus-ring);
+}
+
+/* =============================================
+   Component Classes — Updated to new palette
+   ============================================= */
+@layer components {
+  /* Buttons */
+  .btn-primary {
+    @apply bg-primary text-white px-6 py-3 rounded-xl font-medium
+           tracking-wide transition-all duration-200
+           focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:outline-none;
+  }
+
+  .btn-primary:hover {
+    @apply bg-primary-dark -translate-y-0.5;
+    box-shadow: var(--shadow-primary);
+  }
+
+  .btn-primary:active {
+    @apply translate-y-0 scale-[0.98];
+  }
+
+  .btn-primary:disabled {
+    @apply opacity-50 cursor-not-allowed translate-y-0;
+    box-shadow: none;
+  }
+
+  .btn-secondary {
+    @apply bg-transparent text-primary border border-border
+           px-6 py-3 rounded-xl font-medium transition-all duration-200
+           focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:outline-none;
+  }
+
+  .btn-secondary:hover {
+    @apply border-primary bg-primary-50;
+  }
+
+  .btn-secondary:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  /* Cards — hierarchy system */
+  .card {
+    @apply bg-bg-card border border-border rounded-xl p-6
+           shadow-elevation-1 transition-all duration-300;
+  }
+
+  .card:hover {
+    @apply -translate-y-0.5 shadow-elevation-2;
+  }
+
+  .card-elevated {
+    @apply bg-bg-card border border-border rounded-xl p-6
+           shadow-elevation-2 transition-all duration-300;
+  }
+
+  .card-interactive {
+    @apply card cursor-pointer
+           focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:outline-none;
+  }
+
+  .card-interactive:hover {
+    @apply -translate-y-1 shadow-elevation-3;
+  }
+
+  .card-hero {
+    @apply bg-bg-card rounded-xl p-6 shadow-elevation-3
+           border border-primary/20 transition-all duration-300;
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card) 60%, rgba(239, 246, 255, 0.3) 100%);
+  }
+
+  /* Inputs */
+  .input {
+    @apply bg-white border border-border rounded-xl px-4 py-3
+           text-base transition-all duration-200;
+  }
+
+  .input:focus {
+    @apply outline-none border-primary;
+    box-shadow: var(--focus-ring);
+  }
+
+  .input::placeholder {
+    @apply text-text-muted;
+  }
+
+  .input:disabled {
+    @apply opacity-50 cursor-not-allowed bg-bg-secondary;
+  }
+
+  /* Tags / Badges — pill system with icon support */
+  .tag {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 bg-bg-secondary
+           rounded-full text-sm font-medium text-text-secondary
+           transition-colors duration-200;
+  }
+
+  .tag-primary {
+    @apply tag bg-primary/10 text-primary;
+  }
+
+  .tag-success {
+    @apply tag bg-success/10 text-success;
+  }
+
+  .tag-warning {
+    @apply tag bg-warning/10 text-warning;
+  }
+
+  .tag-error {
+    @apply tag bg-error/10 text-error;
+  }
+
+  .tag-info {
+    @apply tag bg-info/10 text-info;
+  }
+
+  /* Divider */
+  .divider {
+    @apply h-px bg-border-light my-8;
+  }
+}
+
+/* =============================================
+   Animation Utilities
+   ============================================= */
+@layer utilities {
+  /* Stagger delays */
+  .stagger-1 { animation-delay: 0.05s; }
+  .stagger-2 { animation-delay: 0.1s; }
+  .stagger-3 { animation-delay: 0.15s; }
+  .stagger-4 { animation-delay: 0.2s; }
+  .stagger-5 { animation-delay: 0.25s; }
+  .stagger-6 { animation-delay: 0.3s; }
+  .stagger-7 { animation-delay: 0.35s; }
+  .stagger-8 { animation-delay: 0.4s; }
+  .stagger-9 { animation-delay: 0.45s; }
+  .stagger-10 { animation-delay: 0.5s; }
+
+  /* Initial hidden state for staggered entrance */
+  .animate-initial {
+    opacity: 0;
+  }
+
+  /* Safe area padding */
+  .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom); }
+  .safe-area-top { padding-top: env(safe-area-inset-top); }
+  .safe-area-left { padding-left: env(safe-area-inset-left); }
+  .safe-area-right { padding-right: env(safe-area-inset-right); }
+
+  /* WCAG 2.5.5 touch target minimum */
+  .touch-target {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Hide scrollbar */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Tabular numbers for data displays */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Display font utility */
+  .font-display {
+    font-family: var(--font-sora), var(--font-noto-sans-tc), system-ui, sans-serif;
+  }
+}
+
+/* =============================================
+   Custom Animation Keyframes
+   ============================================= */
+
+/* Glow pulse for mission indicators */
+@keyframes glow-pulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* Checkmark draw animation */
+.animate-draw-check {
+  stroke-dasharray: 50;
+  stroke-dashoffset: 50;
+  animation: drawCheck 0.5s ease-out forwards;
+}
+
+@keyframes drawCheck {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Shake animation */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* Fade in */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s var(--ease-out) forwards;
+}
+
+/* Fade in + translate up — GPU accelerated */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.4s var(--ease-out) forwards;
+  will-change: transform, opacity;
+}
+
+/* Bounce in */
+@keyframes bounce-in {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.4s var(--ease-out) forwards;
+}
+
+/* Scale bounce */
+@keyframes scale-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.animate-scale-bounce {
+  animation: scale-bounce 0.2s ease-out;
+}
+
+/* Slide in from right */
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s var(--ease-out) forwards;
+}
+
+/* Directional shimmer for skeletons */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    #E7E5E4 25%,
+    #F5F5F4 37%,
+    #E7E5E4 63%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* =============================================
+   Reduced Motion Support
+   ============================================= */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Preserve necessary visual feedback */
+  *:focus-visible {
+    transition-duration: 150ms !important;
+  }
+
+  .animate-fade-in,
+  .animate-fade-in-up,
+  .animate-bounce-in,
+  .animate-shake,
+  .animate-glow-pulse,
+  .animate-scale-bounce,
+  .animate-slide-in-right,
+  .animate-shimmer {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* =============================================
+   Code Input Fields
+   ============================================= */
+.code-digit {
+  @apply w-14 h-16 rounded-lg border-2 border-border
+         text-2xl font-semibold text-center text-text-primary
+         bg-bg-card transition-all duration-200;
+}
+
+.code-digit:focus {
+  @apply border-primary outline-none;
+  box-shadow: var(--focus-ring);
+}
+
+.code-digit.filled {
+  @apply border-primary bg-primary-50;
+}
+
+.code-digit.error {
+  @apply border-error;
+}
+
+@media (min-width: 768px) {
+  .code-digit {
+    @apply w-16 h-18 text-3xl;
+  }
+}
+
+/* =============================================
+   Toast Notification Styles
+   ============================================= */
+.toast {
+  @apply fixed z-[100] px-4 py-3 rounded-lg shadow-lg
+         flex items-center gap-3 text-sm font-medium
+         animate-slide-in-right;
+}
+
+.toast-success {
+  @apply toast bg-success text-white;
+}
+
+.toast-error {
+  @apply toast bg-error text-white;
+}
+
+.toast-warning {
+  @apply toast bg-warning text-white;
+}
+
+.toast-info {
+  @apply toast bg-info text-white;
+}
+
+/* =============================================
+   High Contrast Mode
+   ============================================= */
+@media (prefers-contrast: high) {
+  :root {
+    --color-primary: #1D4ED8;
+    --color-border: #44403C;
+    --color-text-secondary: #44403C;
+  }
+
+  .card {
+    border-width: 2px;
+  }
+
+  button, a {
+    text-decoration: underline;
+  }
+}
+
+/* =============================================
+   Print Styles
+   ============================================= */
+@media print {
+  * {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+
+  nav, footer, .no-print {
+    display: none !important;
+  }
+}
+
+/* =============================================
+   3D Card Flip Utilities
+   ============================================= */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* Float animation — GPU accelerated */
+@keyframes float {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -15px, 0); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Gentle float — GPU accelerated */
+@keyframes float-gentle {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -8px, 0); }
+}
+
+.animate-float-gentle {
+  animation: float-gentle 3s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Infinite marquee scrolling — GPU accelerated */
+@keyframes marquee-left {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+
+.animate-marquee-left {
+  animation: marquee-left 320s linear infinite;
+}
+
+@keyframes marquee-right {
+  0% { transform: translate3d(-50%, 0, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+.animate-marquee-right {
+  animation: marquee-right 320s linear infinite;
+}
+
+/* Pause marquee on hover */
+.animate-marquee-left:hover,
+.animate-marquee-right:hover {
+  animation-play-state: paused;
+}
+
+/* Fly-to-wall card animation */
+@keyframes fly-to-wall {
+  0% {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  50% {
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.3);
+    opacity: 0;
+  }
+}
+
+.animate-fly-to-wall {
+  animation: fly-to-wall 1.5s ease-in-out forwards;
+}
+
+/* Particle burst */
+@keyframes particle-burst {
+  0% {
+    transform: translate(-50%, -50%) rotate(var(--particle-angle, 0deg)) translateX(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(var(--particle-angle, 0deg)) translateX(150px) scale(0);
+    opacity: 0;
+  }
+}
+
+.animate-particle-burst {
+  animation: particle-burst 1s ease-out forwards;
+}
+
+/* Pulse glow */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.5; }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2.5s ease-in-out infinite;
+}
+
+/* Button subtle hover movement — GPU accelerated */
+@keyframes button-glow-error {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -2px, 0); }
+}
+
+.animate-button-glow-error {
+  animation: button-glow-error 2.5s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes button-glow-accent {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -2px, 0); }
+}
+
+.animate-button-glow-accent {
+  animation: button-glow-accent 2.5s ease-in-out infinite;
+  animation-delay: 0.5s;
+  will-change: transform;
+}
+
+/* Wave animation */
+@keyframes wave {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(12deg); }
+}
+
+.animate-wave {
+  animation: wave 1.2s ease-in-out infinite;
+  transform-origin: bottom center;
+  will-change: transform;
+}
+
+/* Heartbeat */
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.animate-heartbeat {
+  animation: heartbeat 1.5s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* =============================================
+   Operational Dark Mode
+   Toggle via .operational-dark on <html>
+   Scoped to guardian/nunu operational pages
+   ============================================= */
+.operational-dark {
+  --color-bg-primary: #1C1917;
+  --color-bg-secondary: #292524;
+  --color-bg-card: #1C1917;
+  --color-text-primary: #FAFAF9;
+  --color-text-secondary: #A8A29E;
+  --color-text-muted: #8C857F;
+  --color-border: #44403C;
+  --color-border-light: #292524;
+  --shadow-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-elevation-2: 0 4px 8px -2px rgba(0, 0, 0, 0.4);
+  --shadow-elevation-3: 0 8px 16px -4px rgba(0, 0, 0, 0.5);
+}
+
+/* Dark-mode shimmer uses darker tones */
+.operational-dark .animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    #292524 25%,
+    #44403C 37%,
+    #292524 63%
+  );
+  background-size: 200% 100%;
+}
